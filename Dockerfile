@@ -6,7 +6,8 @@ FROM mcr.microsoft.com/vscode/devcontainers/python:0-${VARIANT}
 
 WORKDIR /dev
 COPY ./ .
-
+ENV YOUR_CHANNEL_ACCESS_TOKEN = ${YOUR_CHANNEL_ACCESS_TOKEN}
+ENV YOUR_CHANNEL_SECRET = ${YOUR_CHANNEL_SECRET}
 RUN make setup
 EXPOSE 80
 ENTRYPOINT make start
