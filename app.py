@@ -16,7 +16,9 @@ app = Flask(__name__)
 line_bot_api = LineBotApi(os.environ['YOUR_CHANNEL_ACCESS_TOKEN'])
 handler = WebhookHandler(os.environ['YOUR_CHANNEL_SECRET'])
 
-
+@app.route("/")
+def test():
+    return "<h1>Tests</h1>"
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -36,9 +38,7 @@ def callback():
 
     return 'OK'
 
-@app.route("/healthz")
-def health():
-    return
+
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
@@ -47,6 +47,4 @@ def handle_message(event):
         TextSendMessage(text=event.message.text))
 
 
-@app.route("/")
-def test():
-    return "<h1>Tests</h1>"
+
