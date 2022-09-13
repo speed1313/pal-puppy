@@ -1,7 +1,6 @@
 setup:
 	pip install --upgrade pip
-	pip install flask
-	pip install line-bot-sdk
+	pip install -r requirements.txt
 
 start:
 	python3 app.py
