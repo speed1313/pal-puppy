@@ -47,4 +47,6 @@ def handle_message(event):
         TextSendMessage(text=event.message.text))
 
 
-
+@app.route("/")
+def test():
+    return "<h1>Tests</h1>"
