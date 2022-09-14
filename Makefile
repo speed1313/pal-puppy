@@ -4,6 +4,6 @@ setup:
 	sqlite3 messages.db < messages.sql
 
 db:
-	sqlite3 messages.db < messages.sql
+	sqlite3 tables.db < tables.sql
 start:
 	python3 app.py

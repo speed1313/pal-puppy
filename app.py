@@ -53,7 +53,7 @@ def handle_message(event):
 #プッシュメッセージ
 @app.route("/send")
 def push_message():
-    con = sqlite3.connect('messages.db')
+    con = sqlite3.connect('tables.db')
     cur = con.cursor()
     messages = cur.execute('''SELECT * FROM MESSAGES''').fetchall()
     line_bot_api.broadcast([TextSendMessage(text=random.choice(messages)[0])])
@@ -62,5 +62,16 @@ def push_message():
 
     return 'OK'
 
+def is_matched_full_text(message):
+    con = sqlite3.connect('tables.db')
+    cur = con.cursor()
+    reply_message = cur.execute('''SELECT REPLY_WORD FROM REPLIES WHERE TARGET_WORD = (?)''', (message)).fetchone()
+    if reply_message is None:
+        con.close()
+        return ""
+    else:
+        return reply_message
 
 
+print(is_matched_full_text('wheather'))
+print(is_matched_full_text('hello'))
