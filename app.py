@@ -88,12 +88,14 @@ def handle_message(event):
         cur = con.cursor()
         # reset flag
         cur.execute('''UPDATE USERS SET DIALY_MODE_FLAG = ? WHERE USERID = ?''', (0, user_id,))
+        con.commit()
 
     else :
         if "dialy" in received_text:
             cur = con.cursor()
             cur.execute('''UPDATE USERS SET DIALY_MODE_FLAG = ? WHERE USERID = ?''', (1, user_id))
-            print(cur.execute('''SELECT DIALY_MODE_FLAG FROM USERS WHERE USERID=? ''', (user_id,)).fetchall())
+            con.commit()
+            # print(cur.execute('''SELECT DIALY_MODE_FLAG FROM USERS WHERE USERID=? ''', (user_id,)).fetchall())
 
             # get_daily_report(event)
             message = "come on!"
@@ -205,6 +207,7 @@ def check_user(con, user_id):
 
     if diary_mode_flags == None:
         cur.execute('''INSERT INTO USERS(USERID, DIALY_MODE_FLAG) VALUES(?, ?)''', (user_id, 0))
+        con.commit()
         diary_mode_flag = 0
         print("レコードを追加")
     else :
