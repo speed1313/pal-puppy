@@ -10,6 +10,11 @@ from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage,
 )
 import os
+import sqlite3
+from flask import g
+import random
+
+
 
 import requests
 import json
@@ -102,6 +107,13 @@ def handle_message(event, self):
                 TextSendMessage(text=response))
 
 #プッシュメッセージ
-@app.route("/send/<message>")
-def push_message(message):
-    line_bot_api.broadcast([TextSendMessage(text=message)])
+@app.route("/send")
+def push_message():
+    con = sqlite3.connect('messages.db')
+    cur = con.cursor()
+    messages = cur.execute('''SELECT * FROM MESSAGES''').fetchall()
+    line_bot_api.broadcast([TextSendMessage(text=random.choice(messages)[0])])
+    print(random.choice(messages)[0])
+    con.close()
+
+    return 'OK'
