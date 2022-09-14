@@ -69,13 +69,14 @@ def handle_message(event):
     received_text = transralte_lang(received_text,"JA","EN")
     message = "" #返信メッセージ
 
-    sended_text = transralte_lang(sended_text,"JA","EN")
+    # sended_text = transralte_lang(sended_text,"JA","EN")
     if diary_mode_flag == 1:
         line_bot_api.reply_message(
                 event.reply_token,
-                TextSendMessage(text="画像を生成します"))
+                TextSendMessage(text="create figure"))
+
         diary_mode_flag = 0
-        message = event.message.text
+        message = received_text
 
         cur = con.cursor()
         # reset flag
