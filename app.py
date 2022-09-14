@@ -17,13 +17,17 @@ import requests
 import json
 import types
 
+from reactions import reactions
+
+reactions = reactions()
+
 app = Flask(__name__)
 
 line_bot_api = LineBotApi(os.environ['YOUR_CHANNEL_ACCESS_TOKEN'])
 handler = WebhookHandler(os.environ['YOUR_CHANNEL_SECRET'])
 
 
-diary_mode_flag = False
+# diary_mode_flag = False
 
 @app.route("/")
 def test():
@@ -49,10 +53,19 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event, diary_mode_flag):
+    user_id = event.source.userId
     # print(event.message.text)
+    con = sqlite3.connect('tables.db')
+    cur = con.cursor()
+    try :
+        user = cur.execute('''INSERT INTO USERS(USERID, DIARYMODEFLAG) VALUES(?, ?)''', [user_id], False)
+        diary_mode_flag = False
+    except sqlite3.IntegrityError as e:
+        diary_mode_flag = cur.execute('''SELECT DIARYMODEFLAG FROM USERS WHERE USERID=? ''', [user_id]).fetchone()[0]
+        print(diary_mode_flag)
+    con.close()
 
     if diary_mode_flag == True:
-        print("make_picture")
         line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(text="画像を生成します"))
@@ -75,44 +88,32 @@ def handle_message(event, diary_mode_flag):
         # リクエストを投げる
         request = requests.post("https://api-free.deepl.com/v2/translate", data=params) # URIは有償版, 無償版で異なるため要注意
         result = request.json()
+        message = "diary image"
+
+        con = sqlite3.connect('tables.db')
+        cur = con.cursor()
+        user = cur.execute('''UPDATE INTO USERS(USERID, DIARYMODEFLAG) VALUES(?, ?)''', [user_id], False)
+        con.close()
 
     else :
-        if "日記" in event.message.text:
-            diary_mode_flag = True
-            print("日記を受け付ける")
-            line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage(text="どうぞ"))
-
+        if "dialy" in event.message.text:
+            con = sqlite3.connect('tables.db')
+            cur = con.cursor()
+            user = cur.execute('''UPDATE INTO USERS(USERID, DIARYMODEFLAG) VALUES(?, ?)''', [user_id], True)
+            con.close()
+            reactions.get_daily_report(event)
         else:
             print("反応モード")
-            #word_list:登録しているword
-
+            #word_list:登録しているworde ega
             con = sqlite3.connect('tables.db')
-            message = is_matched_full_text(event.message.text, con)
-            if message != "":
-                line_bot_api.reply_message(
-                    event.reply_token,
-                    TextSendMessage(text=message))
-            else:
-                # print("nobyに頼る")
-                ENDPOINT = "https://www.cotogoto.ai/webapi/noby.json"
-                MY_KEY = '313fbe3c3dd8381b9e26a3a3bc36d51d'
-
-                payload = {'text': f'{event.message.text}', 'app_key': MY_KEY}
-                r = requests.get(ENDPOINT, params=payload)
-                data = r.json()
-                response = data["text"]
-
-                line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage(text=response))
+            message = reactions.is_matched_full_text(event.message.text, con)
+            if message == "":
+                reactions.use_noby(event)
 
             con.close()
-            output = ""
             line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text=output))
+            TextSendMessage(text=message))
 
 #プッシュメッセージ
 @app.route("/send")
