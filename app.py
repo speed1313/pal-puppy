@@ -82,7 +82,7 @@ def handle_message(event):
         diary_mode_flag = 0
         line_bot_api.reply_message(
                 event.reply_token,
-                ImageSendMessage(original_content_url="./img/webhook_url.png"))
+                ImageSendMessage(original_content_url="https://images.dog.ceo//breeds//terrier-norfolk//n02094114_3928.jpg", preview_image_url="https://images.dog.ceo//breeds//terrier-norfolk//n02094114_3928.jpg"))
         message = "image out"
 
         cur = con.cursor()
