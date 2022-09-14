@@ -46,7 +46,7 @@ def callback():
     return 'OK'
 
 @handler.add(MessageEvent, message=TextMessage)
-def handle_message(event, diary, self):
+def handle_message(event, self):
     print(event.message.text)
 
     if diary.diary_mode_flag == True:

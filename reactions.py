@@ -1,35 +1,57 @@
+# from linebot import (
+#     LineBotApi, WebhookHandler
+# )
+# from linebot.models import (
+#     MessageEvent, TextMessage, TextSendMessage,
+# )
 
-
-
+# import requests
+# import os
+# import json
+# import types
 
 # class reactions:
 
 #     def __init__(self):
-#         retun
+#         line_bot_api = LineBotApi(os.environ['YOUR_CHANNEL_ACCESS_TOKEN'])
+#         ENDPOINT = "https://www.cotogoto.ai/webapi/noby.json"
+#         API_KEY = '313fbe3c3dd8381b9e26a3a3bc36d51d'
 
-#     def reaction_spesific_words(self, word):
-#         word_list = []
-#         if event.message.text in word_list:
-#             print("特定のワードを返す")
-#             output = ""
-#             line_bot_api.reply_message(
-#             event.reply_token,
-#             TextSendMessage(text=output))
+#     def get_daily_report(self, event, diary_mode_flag):
+#         diary_mode_flag = True
+#         self.line_bot_api.reply_message(
+#         event.reply_token,
+#         TextSendMessage(text="どうぞ!"))
+
+#         return diary_mode_flag
+
+#     # def make_picture(self, event, text):
+#     #     return
+
+
+
+
+
+#     def reaction_spesific_words(self, event, word_list):
+#         output = ""
+#         self.line_bot_api.reply_message(
+#         event.reply_token,
+#         TextSendMessage(text=output))
 
 
 
     
-#     def use_noby(event, self):
-#         ENDPOINT = "https://www.cotogoto.ai/webapi/noby.json"
-#         API_KEY = '313fbe3c3dd8381b9e26a3a3bc36d51d'
-#         output = ""
-#         payload = {'text': f'{event.message.text}', 'app_key': MY_KEY}
-#         r = requests.get(ENDPOINT, params=payload)
+#     def use_noby(self, event):
+
+#         payload = {'text': f'{event.message.text}', 'app_key': self.API_KEY}
+#         r = requests.get(self.ENDPOINT, params=payload)
 #         data = r.json()
 #         response = data["text"]
 
-#         line_bot_api.reply_message(
+#         self.line_bot_api.reply_message(
 #         event.reply_token,
 #         TextSendMessage(text=response))
+
+
 
         
