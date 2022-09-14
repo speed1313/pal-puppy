@@ -22,8 +22,8 @@ app = Flask(__name__)
 line_bot_api = LineBotApi(os.environ['YOUR_CHANNEL_ACCESS_TOKEN'])
 handler = WebhookHandler(os.environ['YOUR_CHANNEL_SECRET'])
 
-class diary :
-    diary_mode_flag = False
+
+diary_mode_flag = False
 
 @app.route("/")
 def test():
@@ -48,19 +48,43 @@ def callback():
     return 'OK'
 
 @handler.add(MessageEvent, message=TextMessage)
-def handle_message(event, diary):
+def handle_message(event, diary_mode_flag):
     # print(event.message.text)
 
-    if diary.diary_mode_flag == True:
+    if diary_mode_flag == True:
         print("make_picture")
         line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(text="画像を生成します"))
-        diary.diary_mode_flag = False
+        diary_mode_flag = False
+        #deeplに渡す
+        API_KEY = '0210a084-8bd5-b5cb-af38-e2f2bbfb9a2a:fx' # 自身の API キーを指定
+        text = f"{event.message.text}"
+
+        if source_lang == 'EN':
+            source_lang = 'EN'
+            target_lang = 'JA'
+        else:
+            source_lang = 'JA'
+            target_lang = 'EN'
+
+
+        # パラメータの指定
+        params = {
+                    'auth_key' : API_KEY,
+                    'text' : text,
+                    'source_lang' : source_lang, # 翻訳対象の言語
+                    "target_lang": target_lang  # 翻訳後の言語
+                }
+
+        # リクエストを投げる
+        request = requests.post("https://api-free.deepl.com/v2/translate", data=params) # URIは有償版, 無償版で異なるため要注意
+        result = request.json()
+
 
     else :
         if "日記" in event.message.text:
-            diary.diary_mode_flag = True
+            diary_mode_flag = True
             print("日記を受け付ける")
             line_bot_api.reply_message(
                 event.reply_token,
