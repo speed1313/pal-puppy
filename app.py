@@ -46,14 +46,22 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=event.message.text))
+    con = sqlite3.connect('tables.db')
+    message = is_matched_full_text(event.message.text, con)
+    if message != "":
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=message))
+    else:
+        print("no match")
+    con.close()
+    
+    return 'OK'
 
 #プッシュメッセージ
 @app.route("/send")
 def push_message():
-    con = sqlite3.connect('messages.db')
+    con = sqlite3.connect('tables.db')
     cur = con.cursor()
     messages = cur.execute('''SELECT * FROM MESSAGES''').fetchall()
     line_bot_api.broadcast([TextSendMessage(text=random.choice(messages)[0])])
@@ -62,5 +70,18 @@ def push_message():
 
     return 'OK'
 
+def is_matched_full_text(message, con):
+    cur = con.cursor()
+    reply_message = cur.execute('''SELECT REPLY_WORD FROM REPLIES WHERE TARGET_WORD=? ''', [message]).fetchone()
+    if reply_message is None:
+        return ""
+    else:
+        return reply_message[0]
 
 
+if __name__ == "__main__":
+    con = sqlite3.connect('tables.db')
+    print(is_matched_full_text("hello",con))
+    print(is_matched_full_text("ooo", con))
+
+    con.close()
