@@ -79,9 +79,14 @@ def handle_message(event):
         #         event.reply_token,
         #         TextSendMessage(text="create figure"))
 
+        # request = requests.get("https://dog.ceo/api/breeds/image/random")
+        request = requests.get("https://joeschmoe.io/api/v1/random")
+
+        image_url = request
+
         diary_mode_flag = 0
         line_bot_api.push_message(user_id, TextSendMessage(text="Image creating"))
-        line_bot_api.push_message(user_id, ImageSendMessage(original_content_url="https://images.dog.ceo//breeds//terrier-norfolk//n02094114_3928.jpg", preview_image_url="https://images.dog.ceo//breeds//terrier-norfolk//n02094114_3928.jpg"))
+        line_bot_api.push_message(user_id, ImageSendMessage(original_content_url=image_url, preview_image_url=image_url))
 
         message = "Image created"
 
