@@ -61,13 +61,8 @@ def handle_message(event, diary_mode_flag):
         API_KEY = '0210a084-8bd5-b5cb-af38-e2f2bbfb9a2a:fx' # 自身の API キーを指定
         text = f"{event.message.text}"
 
-        if source_lang == 'EN':
-            source_lang = 'EN'
-            target_lang = 'JA'
-        else:
-            source_lang = 'JA'
-            target_lang = 'EN'
-
+        source_lang = 'JA'
+        target_lang = 'EN'
 
         # パラメータの指定
         params = {
@@ -80,7 +75,6 @@ def handle_message(event, diary_mode_flag):
         # リクエストを投げる
         request = requests.post("https://api-free.deepl.com/v2/translate", data=params) # URIは有償版, 無償版で異なるため要注意
         result = request.json()
-
 
     else :
         if "日記" in event.message.text:
