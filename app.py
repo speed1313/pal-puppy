@@ -65,7 +65,7 @@ def handle_message(event):
     con = sqlite3.connect('tables.db')
 
     cur = con.cursor()
-    print(cur.execute('''SELECT DIALY_MODE_FLAG FROM USERS WHERE USERID=? ''', [user_id]).fetchall())
+    print(cur.execute('''SELECT DIALY_MODE_FLAG FROM USERS WHERE USERID=? ''', (user_id,)).fetchall())
 
     diary_mode_flag = check_user(con, user_id)
         #deeplに渡す
@@ -191,6 +191,7 @@ def check_user(con, user_id):
     try :
         cur.execute('''INSERT INTO USERS(USERID, DIALY_MODE_FLAG) VALUES(?, ?)''', (user_id, 0))
         diary_mode_flag = 0
+        print("レコードを追加")
     except sqlite3.IntegrityError as e:
         diary_mode_flag = cur.execute('''SELECT DIALY_MODE_FLAG FROM USERS WHERE USERID=? ''', [user_id]).fetchone()[0]
         print(diary_mode_flag)
