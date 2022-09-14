@@ -201,13 +201,14 @@ def transralte_lang(text, source_lang, target_lang):
 def check_user(con, user_id):
     cur = con.cursor()
 
-    diary_mode_flag = cur.execute('''SELECT DIALY_MODE_FLAG FROM USERS WHERE USERID=? ''', (user_id,)).fetchone()[0]
+    diary_mode_flags = cur.execute('''SELECT DIALY_MODE_FLAG FROM USERS WHERE USERID=? ''', (user_id,)).fetchone()
 
-    if diary_mode_flag == "" :
+    if diary_mode_flags == None:
         cur.execute('''INSERT INTO USERS(USERID, DIALY_MODE_FLAG) VALUES(?, ?)''', (user_id, 0))
         diary_mode_flag = 0
         print("レコードを追加")
     else :
+        diary_mode_flag = diary_mode_flags[0]
         print(diary_mode_flag)
     return diary_mode_flag
 
