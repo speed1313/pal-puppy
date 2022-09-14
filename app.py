@@ -48,35 +48,23 @@ def callback():
     return 'OK'
 
 @handler.add(MessageEvent, message=TextMessage)
-def handle_message(event, self):
+def handle_message(event, diary):
     # print(event.message.text)
 
     if diary.diary_mode_flag == True:
         print("make_picture")
-    # if "diary" in event.message.text:
-    #     print(diary_mode_flag)
-    #     if not diary_mode_flag :
-    #         line_bot_api.reply_message(
-    #             event.reply_token,
-    #             TextSendMessage(text="どうぞ"))
-
-    #         diary_mode_flag = True
-
-    #         #deepl
-    #     else:
-    #         diary_mode_flag = True
-    #         line_bot_api.reply_message(
-    #             event.reply_token,
-    #             TextSendMessage(text="作成中"))
-
-    #         # line_bot_api.reply_message(
-    #         #     event.reply_token,
-    #         #     TextSendMessage(text="作成中"))
+        line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text="画像を生成します"))
+        diary.diary_mode_flag = False
 
     else :
         if "日記" in event.message.text:
             diary.diary_mode_flag = True
             print("日記を受け付ける")
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text="どうぞ"))
 
         else:
             print("反応モード")
