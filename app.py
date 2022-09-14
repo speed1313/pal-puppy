@@ -63,6 +63,10 @@ def handle_message(event):
     # print(event.source.user_id)
     user_id = event.source.user_id
     con = sqlite3.connect('tables.db')
+
+    cur = con.cursor()
+    cur.execute('''SELECT DIALY_MODE_FLAG FROM USERS WHERE USERID=? ''', [user_id]).fetchall()
+
     diary_mode_flag = check_user(con, user_id)
         #deeplに渡す
     received_text = event.message.text
