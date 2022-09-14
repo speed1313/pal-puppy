@@ -42,12 +42,15 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    if "日記" in event.message.text:
+    print(event.message.text)
+    if "diary" in event.message.text:
         print(diary_mode_flag)
         if not diary_mode_flag :
             line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(text="どうぞ"))
+
+            diary_mode_flag = True
 
             #deepl
         else:
@@ -60,13 +63,10 @@ def handle_message(event):
             #     event.reply_token,
             #     TextSendMessage(text="作成中"))
 
+    else :
         line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=event.message.text))
-
-    else :
-        print()
-
 
 #プッシュメッセージ
 @app.route("/send/<message>")
