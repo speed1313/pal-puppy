@@ -151,7 +151,7 @@ def insert_to_replys_db(target_word, reply_word):
     '''
     con = sqlite3.connect('replys.DB')
     cur = con.cursor()
-    sql = 'INSERT INTO REPLIES (target_word, reply) values (?, ?)'
+    sql = '''INSERT INTO REPLIES (TARGET_WORD, REPLY_WORD) values (?, ?)'''
     data = [target_word, reply_word]
     cur.execute(sql, data)
     con.commit()
