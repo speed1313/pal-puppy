@@ -17,14 +17,21 @@ import requests
 import json
 import types
 
-from reactions import reactions
+# from reactions import reactions
 
-reactions = reactions()
+# reactions = reactions()
 
 app = Flask(__name__)
 
 line_bot_api = LineBotApi(os.environ['YOUR_CHANNEL_ACCESS_TOKEN'])
 handler = WebhookHandler(os.environ['YOUR_CHANNEL_SECRET'])
+
+# noby
+ENDPOINT = "https://www.cotogoto.ai/webapi/noby.json"
+API_KEY_noby = '313fbe3c3dd8381b9e26a3a3bc36d51d'
+
+#deepl
+API_KEY_dl = '0210a084-8bd5-b5cb-af38-e2f2bbfb9a2a:fx' # 自身の API キーを指定
 
 
 # diary_mode_flag = False
@@ -53,17 +60,10 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event, diary_mode_flag):
-    user_id = event.source.userId
+    user_id = event['source']['userId']
     # print(event.message.text)
     con = sqlite3.connect('tables.db')
-    cur = con.cursor()
-    try :
-        user = cur.execute('''INSERT INTO USERS(USERID, DIARYMODEFLAG) VALUES(?, ?)''', [user_id], False)
-        diary_mode_flag = False
-    except sqlite3.IntegrityError as e:
-        diary_mode_flag = cur.execute('''SELECT DIARYMODEFLAG FROM USERS WHERE USERID=? ''', [user_id]).fetchone()[0]
-        print(diary_mode_flag)
-    con.close()
+    diary_mode_flag = check_user(con, user_id)
 
     if diary_mode_flag == True:
         line_bot_api.reply_message(
@@ -90,30 +90,26 @@ def handle_message(event, diary_mode_flag):
         result = request.json()
         message = "diary image"
 
-        con = sqlite3.connect('tables.db')
         cur = con.cursor()
         user = cur.execute('''UPDATE INTO USERS(USERID, DIARYMODEFLAG) VALUES(?, ?)''', [user_id], False)
-        con.close()
 
     else :
         if "dialy" in event.message.text:
-            con = sqlite3.connect('tables.db')
             cur = con.cursor()
             user = cur.execute('''UPDATE INTO USERS(USERID, DIARYMODEFLAG) VALUES(?, ?)''', [user_id], True)
-            con.close()
-            reactions.get_daily_report(event)
+            get_daily_report(event)
         else:
             print("反応モード")
             #word_list:登録しているworde ega
             con = sqlite3.connect('tables.db')
-            message = reactions.is_matched_full_text(event.message.text, con)
+            message = is_matched_full_text(event.message.text, con)
             if message == "":
-                reactions.use_noby(event)
+                use_noby(event)
 
-            con.close()
-            line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=message))
+    con.close()
+    line_bot_api.reply_message(
+    event.reply_token,
+    TextSendMessage(text=message))
 
 #プッシュメッセージ
 @app.route("/send")
@@ -134,6 +130,76 @@ def is_matched_full_text(message, con):
         return ""
     else:
         return reply_message[0]
+
+def get_daily_report(event, diary_mode_flag):
+    diary_mode_flag = True
+    line_bot_api.reply_message(
+    event.reply_token,
+    TextSendMessage(text="どうぞ!"))
+
+    return diary_mode_flag
+
+# def make_picture(self, event, text):
+#     return
+
+# def reaction_spesific_words(self, event, word_list):
+#     output = ""
+#     self.line_bot_api.reply_message(
+#     event.reply_token,
+#     TextSendMessage(text=output))
+
+def use_noby(event):
+
+    payload = {'text': f'{event.message.text}', 'app_key': API_KEY_noby}
+    r = requests.get(ENDPOINT, params=payload)
+    data = r.json()
+    response = data["text"]
+    #DBに保存
+    insert_to_replys_db(target_word=event.message.text, reply_word=response)
+
+    return response
+
+
+def insert_to_replys_db(target_word, reply_word):
+    '''
+    '''
+    con = sqlite3.connect('replys.DB')
+    cur = con.cursor()
+    sql = 'INSERT INTO REPLIES (target_word, reply) values (?, ?)'
+    data = [target_word, reply_word]
+    cur.execute(sql, data)
+    con.commit()
+    con.close()
+
+def transralte_lang(text, source_lang, target_lang):
+    """
+    return: deeplからの返り値
+    """
+
+    # パラメータの指定
+    params = {
+                'auth_key' : API_KEY_dl,
+                'text' : text,
+                'source_lang' : source_lang, # 翻訳対象の言語
+                "target_lang": target_lang  # 翻訳後の言語
+            }
+
+    # リクエストを投げる
+    request = requests.post("https://api-free.deepl.com/v2/translate", data=params) # URIは有償版, 無償版で異なるため要注意
+    result = request.json()
+
+    return result
+
+def check_user(con, user_id) :
+    cur = con.cursor()
+    try :
+        user = cur.execute('''INSERT INTO USERS(USERID, DIARYMODEFLAG) VALUES(?, ?)''', [user_id], False)
+        diary_mode_flag = False
+    except sqlite3.IntegrityError as e:
+        diary_mode_flag = cur.execute('''SELECT DIARYMODEFLAG FROM USERS WHERE USERID=? ''', [user_id]).fetchone()[0]
+        print(diary_mode_flag)
+
+    return diary_mode_flag
 
 
 if __name__ == "__main__":
