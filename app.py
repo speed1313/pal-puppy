@@ -60,14 +60,15 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event, diary_mode_flag):
-    user_id = event['source']['userId']
+    user_id = event.source.userId
     # print(event.message.text)
     con = sqlite3.connect('tables.db')
     diary_mode_flag = check_user(con, user_id)
         #deeplに渡す
-    sended_text = event.message.text
+    received_text = event.message.text
+    received_text = translate_lang(received_text,"JA","EN")
+    message = "" #返信メッセージ
 
-    sended_text = translate_lang(sended_text,"JA","EN")
     if diary_mode_flag == True:
         line_bot_api.reply_message(
                 event.reply_token,
@@ -78,24 +79,24 @@ def handle_message(event, diary_mode_flag):
         cur = con.cursor()
         # reset flag
         cur.execute('''UPDATE INTO USERS(USERID, DIARYMODEFLAG) VALUES(?, ?)''', [user_id], False)
+        # TODO:
 
     else :
-        if "dialy" in event.message.text:
+        if "dialy" in received_text:
             cur = con.cursor()
             cur.execute('''UPDATE INTO USERS(USERID, DIARYMODEFLAG) VALUES(?, ?)''', [user_id], True)
             get_daily_report(event)
         else:
             print("反応モード")
-            #word_list:登録しているworde ega
-            con = sqlite3.connect('tables.db')
             message = is_matched_full_text(event.message.text, con)
             if message == "":
-                use_noby(event)
+                message = use_noby(event)
 
-    con.close()
     line_bot_api.reply_message(
-    event.reply_token,
-    TextSendMessage(text=message))
+    event.reply_token, TextSendMessage(text=message))
+    con.close()
+
+    return 'OK'
 
 #プッシュメッセージ
 @app.route("/send")
@@ -104,10 +105,13 @@ def push_message():
     cur = con.cursor()
     messages = cur.execute('''SELECT * FROM MESSAGES''').fetchall()
     line_bot_api.broadcast([TextSendMessage(text=random.choice(messages)[0])])
-    print(random.choice(messages)[0])
     con.close()
 
     return 'OK'
+
+
+
+#########
 
 def is_matched_full_text(message, con):
     cur = con.cursor()
@@ -135,12 +139,11 @@ def get_daily_report(event, diary_mode_flag):
 #     TextSendMessage(text=output))
 
 def use_noby(event):
-
     payload = {'text': f'{event.message.text}', 'app_key': API_KEY_noby}
     r = requests.get(ENDPOINT, params=payload)
     data = r.json()
     response = data["text"]
-    #DBに保存
+    #DBに保存 TODO: これは何?
     insert_to_replys_db(target_word=event.message.text, reply_word=response)
 
     return response
@@ -172,10 +175,9 @@ def transralte_lang(text, source_lang, target_lang):
     request = requests.post("https://api-free.deepl.com/v2/translate", data=params) # URIは有償版, 無償版で異なるため要注意
     result = request.json()
     # {'translations': [{'detected_source_language': 'EN', 'text': 'リーマンゼータ関数は、整数論において非常に重要な関数である。'}]}
-
     return result['translations'][0]['text']
 
-def check_user(con, user_id) :
+def check_user(con, user_id):
     cur = con.cursor()
     try :
         cur.execute('''INSERT INTO USERS(USERID, DIARYMODEFLAG) VALUES(?, ?)''', [user_id], False)
@@ -183,7 +185,6 @@ def check_user(con, user_id) :
     except sqlite3.IntegrityError as e:
         diary_mode_flag = cur.execute('''SELECT DIARYMODEFLAG FROM USERS WHERE USERID=? ''', [user_id]).fetchone()[0]
         print(diary_mode_flag)
-
     return diary_mode_flag
 
 
