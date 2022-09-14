@@ -38,18 +38,17 @@ def callback():
 
     return 'OK'
 
-userId = ''
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    userId = event.source.userId
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=event.message.text))
 
-@handler.add(MessageEvent, message=TextMessage)
-def push_message():
-    line_bot_api.push_message(userId, TextSendMessage(text='Hello World!'))
+#プッシュメッセージ
+@app.route("/send/<message>")
+def push_message(message):
+    line_bot_api.broadcast([TextSendMessage(text=message)])
 
 
 
