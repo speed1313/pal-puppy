@@ -90,7 +90,7 @@ def handle_message(event):
             print("反応モード")
             message = is_matched_full_text(event.message.text, con)
             if message == "":
-                message = use_noby(event)
+                message = use_noby(con, event)
 
     line_bot_api.reply_message(
     event.reply_token, TextSendMessage(text=message))
@@ -138,27 +138,27 @@ def get_daily_report(event, diary_mode_flag):
 #     event.reply_token,
 #     TextSendMessage(text=output))
 
-def use_noby(event):
+def use_noby(con, event):
     payload = {'text': f'{event.message.text}', 'app_key': API_KEY_noby}
     r = requests.get(ENDPOINT, params=payload)
     data = r.json()
     response = data["text"]
     #DBに保存 TODO: これは何?
-    insert_to_replys_db(target_word=event.message.text, reply_word=response)
+    insert_to_replys_db(con, target_word=event.message.text, reply_word=response)
 
     return response
 
 
-def insert_to_replys_db(target_word, reply_word):
+def insert_to_replys_db(con, target_word, reply_word):
     '''
     '''
-    con = sqlite3.connect('replys.DB')
+    # con = sqlite3.connect('replys.DB')
     cur = con.cursor()
     sql = '''INSERT INTO REPLIES (TARGET_WORD, REPLY_WORD) values (?, ?)'''
     data = [target_word, reply_word]
     cur.execute(sql, data)
     con.commit()
-    con.close()
+    # con.close()
 
 def transralte_lang(text, source_lang, target_lang):
     """
