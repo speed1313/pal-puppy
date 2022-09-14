@@ -66,7 +66,7 @@ def handle_message(event):
     diary_mode_flag = check_user(con, user_id)
         #deeplに渡す
     received_text = event.message.text
-    received_text = transralte_lang(received_text,"JA","EN")
+    # received_text = transralte_lang(received_text,"JA","EN")
     message = "" #返信メッセージ
 
     # sended_text = transralte_lang(sended_text,"JA","EN")
@@ -76,17 +76,19 @@ def handle_message(event):
                 TextSendMessage(text="create figure"))
 
         diary_mode_flag = 0
-        message = received_text
+        message = "image out"
 
         cur = con.cursor()
         # reset flag
-        cur.execute('''UPDATE INTO USERS(USERID, DAILY_MODE_FLAG) VALUES(?, ?)''', ([user_id], 0))
+        cur.execute('''UPDATE INTO USERS(USERID, DIALY_MODE_FLAG) VALUES(?, ?)''', ([user_id], 0))
 
     else :
         if "dialy" in received_text:
             cur = con.cursor()
-            cur.execute('''UPDATE INTO USERS(USERID, DAILY_MODE_FLAG) VALUES(?, ?)''', ([user_id], 1))
-            get_daily_report(event)
+            cur.execute('''UPDATE INTO USERS(USERID, DIALY_MODE_FLAG) VALUES(?, ?)''', ([user_id], 1))
+            # get_daily_report(event)
+            message = "come on!"
+
         else:
             print("反応モード")
             message = is_matched_full_text(event.message.text, con)
@@ -110,8 +112,6 @@ def push_message():
 
     return 'OK'
 
-
-
 #########
 
 def is_matched_full_text(message, con):
@@ -122,13 +122,13 @@ def is_matched_full_text(message, con):
     else:
         return reply_message[0]
 
-def get_daily_report(event, diary_mode_flag):
-    diary_mode_flag = 1
-    line_bot_api.reply_message(
-    event.reply_token,
-    TextSendMessage(text="どうぞ!"))
+# def get_daily_report(event, diary_mode_flag):
+#     # diary_mode_flag = 1
+#     line_bot_api.reply_message(
+#     event.reply_token,
+#     TextSendMessage(text="どうぞ!"))
 
-    return diary_mode_flag
+#     return diary_mode_flag
 
 # def make_picture(self, event, text):
 #     return
@@ -181,10 +181,10 @@ def transralte_lang(text, source_lang, target_lang):
 def check_user(con, user_id):
     cur = con.cursor()
     try :
-        cur.execute('''INSERT INTO USERS(USERID, DAILY_MODE_FLAG) VALUES(?, ?)''', (user_id, 0))
+        cur.execute('''INSERT INTO USERS(USERID, DIALY_MODE_FLAG) VALUES(?, ?)''', (user_id, 0))
         diary_mode_flag = 0
     except sqlite3.IntegrityError as e:
-        diary_mode_flag = cur.execute('''SELECT DAILY_MODE_FLAG FROM USERS WHERE USERID=? ''', [user_id]).fetchone()[0]
+        diary_mode_flag = cur.execute('''SELECT DIALY_MODE_FLAG FROM USERS WHERE USERID=? ''', [user_id]).fetchone()[0]
         print(diary_mode_flag)
     return diary_mode_flag
 
