@@ -80,12 +80,13 @@ def handle_message(event):
 
         cur = con.cursor()
         # reset flag
-        cur.execute('''UPDATE INTO USERS(USERID, DIALY_MODE_FLAG) VALUES(?, ?)''', ([user_id], 0))
+        cur.execute('''UPDATE USERS SET DIALY_MODE_FLAG = 0 WHERE USERID = ?''', user_id)
 
     else :
         if "dialy" in received_text:
             cur = con.cursor()
-            cur.execute('''UPDATE INTO USERS(USERID, DIALY_MODE_FLAG) VALUES(?, ?)''', ([user_id], 1))
+            cur.execute('''UPDATE USERS SET DIALY_MODE_FLAG = 1 WHERE USERID = ?''', user_id)
+
             # get_daily_report(event)
             message = "come on!"
 
