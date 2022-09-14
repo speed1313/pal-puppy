@@ -77,12 +77,12 @@ def handle_message(event, diary_mode_flag):
 
         cur = con.cursor()
         # reset flag
-        cur.execute('''UPDATE INTO USERS(USERID, DIARYMODEFLAG) VALUES(?, ?)''', [user_id], False)
+        cur.execute('''UPDATE INTO USERS(USERID, DIARYMODEFLAG) VALUES(?, ?)''', ([user_id], False))
 
     else :
         if "dialy" in event.message.text:
             cur = con.cursor()
-            cur.execute('''UPDATE INTO USERS(USERID, DIARYMODEFLAG) VALUES(?, ?)''', [user_id], True)
+            cur.execute('''UPDATE INTO USERS(USERID, DIARYMODEFLAG) VALUES(?, ?)''', ([user_id], False))
             get_daily_report(event)
         else:
             print("反応モード")
@@ -178,7 +178,7 @@ def transralte_lang(text, source_lang, target_lang):
 def check_user(con, user_id) :
     cur = con.cursor()
     try :
-        cur.execute('''INSERT INTO USERS(USERID, DIARYMODEFLAG) VALUES(?, ?)''', [user_id], False)
+        cur.execute('''INSERT INTO USERS(USERID, DIARYMODEFLAG) VALUES(?, ?)''', ([user_id], False))
         diary_mode_flag = False
     except sqlite3.IntegrityError as e:
         diary_mode_flag = cur.execute('''SELECT DIARYMODEFLAG FROM USERS WHERE USERID=? ''', [user_id]).fetchone()[0]
