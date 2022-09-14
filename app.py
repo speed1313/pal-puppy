@@ -187,17 +187,29 @@ def transralte_lang(text, source_lang, target_lang):
     # {'translations': [{'detected_source_language': 'EN', 'text': 'リーマンゼータ関数は、整数論において非常に重要な関数である。'}]}
     return result['translations'][0]['text']
 
+# def check_user(con, user_id):
+#     cur = con.cursor()
+#     try :
+#         cur.execute('''INSERT INTO USERS(USERID, DIALY_MODE_FLAG) VALUES(?, ?)''', (user_id, 0))
+#         diary_mode_flag = 0
+#         print("レコードを追加")
+#     except sqlite3.IntegrityError as e:
+#         diary_mode_flag = cur.execute('''SELECT DIALY_MODE_FLAG FROM USERS WHERE USERID=? ''', (user_id,)).fetchone()[0]
+#         print(diary_mode_flag)
+#     return diary_mode_flag
+
 def check_user(con, user_id):
     cur = con.cursor()
-    try :
+
+    diary_mode_flag = cur.execute('''SELECT DIALY_MODE_FLAG FROM USERS WHERE USERID=? ''', (user_id,)).fetchone()[0]
+
+    if diary_mode_flag == "" :
         cur.execute('''INSERT INTO USERS(USERID, DIALY_MODE_FLAG) VALUES(?, ?)''', (user_id, 0))
         diary_mode_flag = 0
         print("レコードを追加")
-    except sqlite3.IntegrityError as e:
-        diary_mode_flag = cur.execute('''SELECT DIALY_MODE_FLAG FROM USERS WHERE USERID=? ''', (user_id,)).fetchone()
+    else :
         print(diary_mode_flag)
     return diary_mode_flag
-
 
 if __name__ == "__main__":
     print(transralte_lang("こんにちは","JA","EN"))
