@@ -34,7 +34,7 @@ API_KEY_noby = '313fbe3c3dd8381b9e26a3a3bc36d51d'
 API_KEY_dl = '0210a084-8bd5-b5cb-af38-e2f2bbfb9a2a:fx' # 自身の API キーを指定
 
 
-# diary_mode_flag = False
+# diary_mode_flag = 0
 
 @app.route("/")
 def test():
@@ -68,21 +68,21 @@ def handle_message(event, diary_mode_flag):
     sended_text = event.message.text
 
     sended_text = transralte_lang(sended_text,"JA","EN")
-    if diary_mode_flag == True:
+    if diary_mode_flag == 1:
         line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(text="画像を生成します"))
-        diary_mode_flag = False
-        message = "diary image"
+        diary_mode_flag = 0
+        message = event.message.text
 
         cur = con.cursor()
         # reset flag
-        cur.execute('''UPDATE INTO USERS(USERID, DAILY_MODE_FLAG) VALUES(?, ?)''', ([user_id], False))
+        cur.execute('''UPDATE INTO USERS(USERID, DAILY_MODE_FLAG) VALUES(?, ?)''', ([user_id], 0))
 
     else :
         if "dialy" in event.message.text:
             cur = con.cursor()
-            cur.execute('''UPDATE INTO USERS(USERID, DAILY_MODE_FLAG) VALUES(?, ?)''', ([user_id], False))
+            cur.execute('''UPDATE INTO USERS(USERID, DAILY_MODE_FLAG) VALUES(?, ?)''', ([user_id], 1))
             get_daily_report(event)
         else:
             print("反応モード")
@@ -118,7 +118,7 @@ def is_matched_full_text(message, con):
         return reply_message[0]
 
 def get_daily_report(event, diary_mode_flag):
-    diary_mode_flag = True
+    diary_mode_flag = 1
     line_bot_api.reply_message(
     event.reply_token,
     TextSendMessage(text="どうぞ!"))
@@ -178,8 +178,8 @@ def transralte_lang(text, source_lang, target_lang):
 def check_user(con, user_id) :
     cur = con.cursor()
     try :
-        cur.execute('''INSERT INTO USERS(USERID, DAILY_MODE_FLAG) VALUES(?, ?)''', ([user_id], False))
-        diary_mode_flag = False
+        cur.execute('''INSERT INTO USERS(USERID, DAILY_MODE_FLAG) VALUES(?, ?)''', ([user_id], 0))
+        diary_mode_flag = 0
     except sqlite3.IntegrityError as e:
         diary_mode_flag = cur.execute('''SELECT DAILY_MODE_FLAG FROM USERS WHERE USERID=? ''', [user_id]).fetchone()[0]
         print(diary_mode_flag)
