@@ -75,9 +75,9 @@ def handle_message(event):
 
     # sended_text = transralte_lang(sended_text,"JA","EN")
     if diary_mode_flag == 1:
-        line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage(text="create figure"))
+        # line_bot_api.reply_message(
+        #         event.reply_token,
+        #         TextSendMessage(text="create figure"))
 
         diary_mode_flag = 0
         line_bot_api.reply_message(
