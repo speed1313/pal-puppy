@@ -60,14 +60,14 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event, diary_mode_flag):
-    user_id = event['source']['userId']
-    # print(event.message.text)
+    user_id = event.source.userId
+    print(event)
     con = sqlite3.connect('tables.db')
     diary_mode_flag = check_user(con, user_id)
         #deeplに渡す
     sended_text = event.message.text
 
-    sended_text = translate_lang(sended_text,"JA","EN")
+    sended_text = transralte_lang(sended_text,"JA","EN")
     if diary_mode_flag == True:
         line_bot_api.reply_message(
                 event.reply_token,
