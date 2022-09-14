@@ -13,9 +13,6 @@ import os
 import sqlite3
 from flask import g
 import random
-
-
-
 import requests
 import json
 import types
@@ -52,7 +49,7 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event, self):
-    print(event.message.text)
+    # print(event.message.text)
 
     if diary.diary_mode_flag == True:
         print("make_picture")
@@ -93,7 +90,7 @@ def handle_message(event, self):
                 TextSendMessage(text=output))
 
             else:
-                print("nobyに頼る")
+                # print("nobyに頼る")
                 ENDPOINT = "https://www.cotogoto.ai/webapi/noby.json"
                 MY_KEY = '313fbe3c3dd8381b9e26a3a3bc36d51d'
 

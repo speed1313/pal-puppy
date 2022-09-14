@@ -9,6 +9,7 @@ import requests
 import os
 import json
 import types
+import sqlite3
 
 class reactions:
 
@@ -45,7 +46,15 @@ class reactions:
         event.reply_token,
         TextSendMessage(text=response))
 
-    def insert_to_noby_db(self):
-        con = sqlite3.connect('./replys.DB')
+        self.insert_to_replys_db(target_word=event.message.text, reply_word=response)
+
+    def insert_to_replys_db(self, target_word, reply_word):
+        '''
+        '''
+        con = sqlite3.connect('replys.DB')
         cur = con.cursor()
-        sql = 'IN'
+        sql = 'INSERT INTO REPLYS (target_word, reply) values (?, ?)'
+        data = [target_word, reply_word]
+        cur.execute(sql, data)
+        con.commit()
+        con.close()
