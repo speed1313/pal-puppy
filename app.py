@@ -60,7 +60,7 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event, diary_mode_flag):
-    print(event)
+    print(event.source)
     user_id = event.source.userId
     con = sqlite3.connect('tables.db')
     diary_mode_flag = check_user(con, user_id)
