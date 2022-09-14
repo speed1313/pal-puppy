@@ -16,7 +16,10 @@ class reactions:
     def __init__(self):
         line_bot_api = LineBotApi(os.environ['YOUR_CHANNEL_ACCESS_TOKEN'])
         ENDPOINT = "https://www.cotogoto.ai/webapi/noby.json"
-        API_KEY = '313fbe3c3dd8381b9e26a3a3bc36d51d'
+        API_KEY_noby = '313fbe3c3dd8381b9e26a3a3bc36d51d'
+
+        #deepl
+        API_KEY_dl = '0210a084-8bd5-b5cb-af38-e2f2bbfb9a2a:fx' # 自身の API キーを指定
 
     def get_daily_report(self, event, diary_mode_flag):
         diary_mode_flag = True
@@ -37,7 +40,7 @@ class reactions:
 
     def use_noby(self, event):
 
-        payload = {'text': f'{event.message.text}', 'app_key': self.API_KEY}
+        payload = {'text': f'{event.message.text}', 'app_key': self.API_KEY_noby}
         r = requests.get(self.ENDPOINT, params=payload)
         data = r.json()
         response = data["text"]
@@ -58,3 +61,19 @@ class reactions:
         cur.execute(sql, data)
         con.commit()
         con.close()
+
+    def transralte_lang(self, text, source_lang, target_lang):
+
+        # パラメータの指定
+        params = {
+                    'auth_key' : self.API_KEY_dl,
+                    'text' : text,
+                    'source_lang' : source_lang, # 翻訳対象の言語
+                    "target_lang": target_lang  # 翻訳後の言語
+                }
+
+        # リクエストを投げる
+        request = requests.post("https://api-free.deepl.com/v2/translate", data=params) # URIは有償版, 無償版で異なるため要注意
+        result = request.json()
+
+        return result
