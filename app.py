@@ -82,7 +82,7 @@ def handle_message(event):
         diary_mode_flag = 0
         line_bot_api.reply_message(
                 event.reply_token,
-                ImageSendMessage(original_content_url="https://joeschmoe.io/api/v1/random"))
+                ImageSendMessage(original_content_url="./img/webhook_url.png"))
         message = "image out"
 
         cur = con.cursor()
