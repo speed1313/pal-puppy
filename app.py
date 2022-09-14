@@ -77,12 +77,12 @@ def handle_message(event, diary_mode_flag):
 
         cur = con.cursor()
         # reset flag
-        cur.execute('''UPDATE INTO USERS(USERID, DAIRYMODEFLAG) VALUES(?, ?)''', ([user_id], False))
+        cur.execute('''UPDATE INTO USERS(USERID, DAILY_MODE_FLAG) VALUES(?, ?)''', ([user_id], False))
 
     else :
         if "dialy" in event.message.text:
             cur = con.cursor()
-            cur.execute('''UPDATE INTO USERS(USERID, DIIRYMODEFLAG) VALUES(?, ?)''', ([user_id], False))
+            cur.execute('''UPDATE INTO USERS(USERID, DAILY_MODE_FLAG) VALUES(?, ?)''', ([user_id], False))
             get_daily_report(event)
         else:
             print("反応モード")
@@ -178,10 +178,10 @@ def transralte_lang(text, source_lang, target_lang):
 def check_user(con, user_id) :
     cur = con.cursor()
     try :
-        cur.execute('''INSERT INTO USERS(USERID, DAIRYMODEFLAG) VALUES(?, ?)''', ([user_id], False))
+        cur.execute('''INSERT INTO USERS(USERID, DAILY_MODE_FLAG) VALUES(?, ?)''', ([user_id], False))
         diary_mode_flag = False
     except sqlite3.IntegrityError as e:
-        diary_mode_flag = cur.execute('''SELECT DAIRYMODEFLAG FROM USERS WHERE USERID=? ''', [user_id]).fetchone()[0]
+        diary_mode_flag = cur.execute('''SELECT DAILY_MODE_FLAG FROM USERS WHERE USERID=? ''', [user_id]).fetchone()[0]
         print(diary_mode_flag)
 
     return diary_mode_flag
