@@ -64,8 +64,8 @@ def handle_message(event):
     user_id = event.source.user_id
     con = sqlite3.connect('tables.db')
 
-    cur = con.cursor()
-    print(cur.execute('''SELECT DIALY_MODE_FLAG FROM USERS WHERE USERID=? ''', (user_id,)).fetchall())
+    # cur = con.cursor()
+    # print(cur.execute('''SELECT DIALY_MODE_FLAG FROM USERS WHERE USERID=? ''', (user_id,)).fetchall())
 
     diary_mode_flag = check_user(con, user_id)
         #deeplに渡す
@@ -87,12 +87,12 @@ def handle_message(event):
 
         cur = con.cursor()
         # reset flag
-        cur.execute('''UPDATE USERS SET DIALY_MODE_FLAG = 0 WHERE USERID = ?''', (user_id,))
+        cur.execute('''UPDATE USERS SET DIALY_MODE_FLAG = ? WHERE USERID = ?''', (0, user_id,))
 
     else :
         if "dialy" in received_text:
             cur = con.cursor()
-            cur.execute('''UPDATE USERS SET DIALY_MODE_FLAG = 1 WHERE USERID = ?''', (user_id,))
+            cur.execute('''UPDATE USERS SET DIALY_MODE_FLAG = ? WHERE USERID = ?''', (1, user_id))
 
             # get_daily_report(event)
             message = "come on!"
@@ -193,7 +193,7 @@ def check_user(con, user_id):
         diary_mode_flag = 0
         print("レコードを追加")
     except sqlite3.IntegrityError as e:
-        diary_mode_flag = cur.execute('''SELECT DIALY_MODE_FLAG FROM USERS WHERE USERID=? ''', [user_id]).fetchone()[0]
+        diary_mode_flag = cur.execute('''SELECT DIALY_MODE_FLAG FROM USERS WHERE USERID=? ''', (user_id,)).fetchone()
         print(diary_mode_flag)
     return diary_mode_flag
 
