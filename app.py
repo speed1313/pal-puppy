@@ -93,6 +93,7 @@ def handle_message(event):
         if "dialy" in received_text:
             cur = con.cursor()
             cur.execute('''UPDATE USERS SET DIALY_MODE_FLAG = ? WHERE USERID = ?''', (1, user_id))
+            print(cur.execute('''SELECT DIALY_MODE_FLAG FROM USERS WHERE USERID=? ''', (user_id,)).fetchall())
 
             # get_daily_report(event)
             message = "come on!"
