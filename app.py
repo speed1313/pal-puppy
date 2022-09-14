@@ -87,14 +87,13 @@ def handle_message(event, diary_mode_flag):
         else:
             print("反応モード")
             #word_list:登録しているword
-            word_list = []
-            if event.message.text in word_list:
-                print("特定のワードを返す")
-                output = ""
-                line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage(text=output))
 
+            con = sqlite3.connect('tables.db')
+            message = is_matched_full_text(event.message.text, con)
+            if message != "":
+                line_bot_api.reply_message(
+                    event.reply_token,
+                    TextSendMessage(text=message))
             else:
                 # print("nobyに頼る")
                 ENDPOINT = "https://www.cotogoto.ai/webapi/noby.json"
@@ -109,10 +108,16 @@ def handle_message(event, diary_mode_flag):
                 event.reply_token,
                 TextSendMessage(text=response))
 
+            con.close()
+            output = ""
+            line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=output))
+
 #プッシュメッセージ
 @app.route("/send")
 def push_message():
-    con = sqlite3.connect('messages.db')
+    con = sqlite3.connect('tables.db')
     cur = con.cursor()
     messages = cur.execute('''SELECT * FROM MESSAGES''').fetchall()
     line_bot_api.broadcast([TextSendMessage(text=random.choice(messages)[0])])
@@ -120,3 +125,19 @@ def push_message():
     con.close()
 
     return 'OK'
+
+def is_matched_full_text(message, con):
+    cur = con.cursor()
+    reply_message = cur.execute('''SELECT REPLY_WORD FROM REPLIES WHERE TARGET_WORD=? ''', [message]).fetchone()
+    if reply_message is None:
+        return ""
+    else:
+        return reply_message[0]
+
+
+if __name__ == "__main__":
+    con = sqlite3.connect('tables.db')
+    print(is_matched_full_text("hello",con))
+    print(is_matched_full_text("ooo", con))
+
+    con.close()
