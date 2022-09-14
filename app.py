@@ -38,7 +38,10 @@ def callback():
 
     return 'OK'
 
+<<<<<<< HEAD
 diary_mode_flag = False
+=======
+>>>>>>> main
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event, diary_mode_flag):
@@ -56,11 +59,22 @@ def handle_message(event, diary_mode_flag):
                 event.reply_token,
                 TextSendMessage(text="どうぞ"))
 
-
-
-    else:
-
-
-        line_bot_api.reply_message(
+            line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=event.message.text))
+
+
+#プッシュメッセージ
+@app.route("/send/<message>")
+def push_message(message):
+    line_bot_api.broadcast([TextSendMessage(text=message)])
+
+<<<<<<< HEAD
+    else:
+=======
+#プッシュメッセージ
+@app.route("/send/<message>")
+def push_message(message):
+    line_bot_api.broadcast([TextSendMessage(text=message)])
+
+>>>>>>> ma
