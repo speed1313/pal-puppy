@@ -59,8 +59,8 @@ def callback():
 
 
 @handler.add(MessageEvent, message=TextMessage)
-def handle_message(event, diary_mode_flag):
-    print(event.source.user_id)
+def handle_message(event):
+    # print(event.source.user_id)
     user_id = event.source.user_id
     con = sqlite3.connect('tables.db')
     diary_mode_flag = check_user(con, user_id)
@@ -178,7 +178,7 @@ def transralte_lang(text, source_lang, target_lang):
 def check_user(con, user_id) :
     cur = con.cursor()
     try :
-        cur.execute('''INSERT INTO USERS(USERID, DAILY_MODE_FLAG) VALUES(?, ?)''', ([user_id], 0))
+        cur.execute('''INSERT INTO USERS(USERID, DAILY_MODE_FLAG) VALUES(?, ?)''', (user_id, 0))
         diary_mode_flag = 0
     except sqlite3.IntegrityError as e:
         diary_mode_flag = cur.execute('''SELECT DAILY_MODE_FLAG FROM USERS WHERE USERID=? ''', [user_id]).fetchone()[0]
