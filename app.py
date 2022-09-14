@@ -20,7 +20,8 @@ app = Flask(__name__)
 line_bot_api = LineBotApi(os.environ['YOUR_CHANNEL_ACCESS_TOKEN'])
 handler = WebhookHandler(os.environ['YOUR_CHANNEL_SECRET'])
 
-diary_mode_flag = False
+class diary :
+    diary_mode_flag = False
 
 @app.route("/")
 def test():
@@ -45,10 +46,10 @@ def callback():
     return 'OK'
 
 @handler.add(MessageEvent, message=TextMessage)
-def handle_message(event, self):
+def handle_message(event, diary, self):
     print(event.message.text)
 
-    if self.diary_mode_flag == True:
+    if diary.diary_mode_flag == True:
         print("make_picture")
     # if "diary" in event.message.text:
     #     print(diary_mode_flag)
@@ -72,7 +73,7 @@ def handle_message(event, self):
 
     else :
         if "日記" in event.message.text:
-            self.diary_mode_flag = True
+            diary.diary_mode_flag = True
             print("日記を受け付ける")
 
         else:
