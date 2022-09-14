@@ -7,7 +7,7 @@ from linebot.exceptions import (
     InvalidSignatureError
 )
 from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage,
+    MessageEvent, TextMessage, TextSendMessage, ImageSendMessage,
 )
 import os
 import sqlite3
@@ -76,16 +76,19 @@ def handle_message(event):
                 TextSendMessage(text="create figure"))
 
         diary_mode_flag = 0
+        line_bot_api.reply_message(
+                event.reply_token,
+                ImageSendMessage(original_content_url="https://joeschmoe.io/api/v1/random"))
         message = "image out"
 
         cur = con.cursor()
         # reset flag
-        cur.execute('''UPDATE USERS SET DIALY_MODE_FLAG = 0 WHERE USERID = ?''', user_id)
+        cur.execute('''UPDATE USERS SET DIALY_MODE_FLAG = 0 WHERE USERID = ?''', (user_id,))
 
     else :
         if "dialy" in received_text:
             cur = con.cursor()
-            cur.execute('''UPDATE USERS SET DIALY_MODE_FLAG = 1 WHERE USERID = ?''', user_id)
+            cur.execute('''UPDATE USERS SET DIALY_MODE_FLAG = 1 WHERE USERID = ?''', (user_id,))
 
             # get_daily_report(event)
             message = "come on!"
