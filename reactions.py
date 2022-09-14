@@ -32,11 +32,11 @@ class reactions:
     def make_picture(self, event, text):
         return
 
-    def reaction_spesific_words(self, event, word_list):
-        output = ""
-        self.line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=output))
+    # def reaction_spesific_words(self, event, word_list):
+    #     output = ""
+    #     self.line_bot_api.reply_message(
+    #     event.reply_token,
+    #     TextSendMessage(text=output))
 
     def use_noby(self, event):
 
@@ -44,25 +44,27 @@ class reactions:
         r = requests.get(self.ENDPOINT, params=payload)
         data = r.json()
         response = data["text"]
-
-        self.line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=response))
-
+        #DBに保存
         self.insert_to_replys_db(target_word=event.message.text, reply_word=response)
+
+        return response
+
 
     def insert_to_replys_db(self, target_word, reply_word):
         '''
         '''
         con = sqlite3.connect('replys.DB')
         cur = con.cursor()
-        sql = 'INSERT INTO REPLYS (target_word, reply) values (?, ?)'
+        sql = 'INSERT INTO REPLIES (target_word, reply) values (?, ?)'
         data = [target_word, reply_word]
         cur.execute(sql, data)
         con.commit()
         con.close()
 
     def transralte_lang(self, text, source_lang, target_lang):
+        """
+        return: deeplからの返り値        
+        """
 
         # パラメータの指定
         params = {
