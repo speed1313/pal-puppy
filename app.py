@@ -55,8 +55,8 @@ def callback():
     except InvalidSignatureError:
         print("Invalid signature. Please check your channel access token/channel secret.")
         abort(400)
-
     return 'OK'
+
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event, diary_mode_flag):
@@ -64,39 +64,25 @@ def handle_message(event, diary_mode_flag):
     # print(event.message.text)
     con = sqlite3.connect('tables.db')
     diary_mode_flag = check_user(con, user_id)
+        #deeplに渡す
+    sended_text = event.message.text
 
+    sended_text = translate_lang(sended_text,"JA","EN")
     if diary_mode_flag == True:
         line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(text="画像を生成します"))
         diary_mode_flag = False
-        #deeplに渡す
-        API_KEY = '0210a084-8bd5-b5cb-af38-e2f2bbfb9a2a:fx' # 自身の API キーを指定
-        text = f"{event.message.text}"
-
-        source_lang = 'JA'
-        target_lang = 'EN'
-
-        # パラメータの指定
-        params = {
-                    'auth_key' : API_KEY,
-                    'text' : text,
-                    'source_lang' : source_lang, # 翻訳対象の言語
-                    "target_lang": target_lang  # 翻訳後の言語
-                }
-
-        # リクエストを投げる
-        request = requests.post("https://api-free.deepl.com/v2/translate", data=params) # URIは有償版, 無償版で異なるため要注意
-        result = request.json()
         message = "diary image"
 
         cur = con.cursor()
-        user = cur.execute('''UPDATE INTO USERS(USERID, DIARYMODEFLAG) VALUES(?, ?)''', [user_id], False)
+        # reset flag
+        cur.execute('''UPDATE INTO USERS(USERID, DIARYMODEFLAG) VALUES(?, ?)''', [user_id], False)
 
     else :
         if "dialy" in event.message.text:
             cur = con.cursor()
-            user = cur.execute('''UPDATE INTO USERS(USERID, DIARYMODEFLAG) VALUES(?, ?)''', [user_id], True)
+            cur.execute('''UPDATE INTO USERS(USERID, DIARYMODEFLAG) VALUES(?, ?)''', [user_id], True)
             get_daily_report(event)
         else:
             print("反応モード")
@@ -175,7 +161,6 @@ def transralte_lang(text, source_lang, target_lang):
     """
     return: deeplからの返り値
     """
-
     # パラメータの指定
     params = {
                 'auth_key' : API_KEY_dl,
@@ -183,17 +168,17 @@ def transralte_lang(text, source_lang, target_lang):
                 'source_lang' : source_lang, # 翻訳対象の言語
                 "target_lang": target_lang  # 翻訳後の言語
             }
-
     # リクエストを投げる
     request = requests.post("https://api-free.deepl.com/v2/translate", data=params) # URIは有償版, 無償版で異なるため要注意
     result = request.json()
+    # {'translations': [{'detected_source_language': 'EN', 'text': 'リーマンゼータ関数は、整数論において非常に重要な関数である。'}]}
 
-    return result
+    return result['translations'][0]['text']
 
 def check_user(con, user_id) :
     cur = con.cursor()
     try :
-        user = cur.execute('''INSERT INTO USERS(USERID, DIARYMODEFLAG) VALUES(?, ?)''', [user_id], False)
+        cur.execute('''INSERT INTO USERS(USERID, DIARYMODEFLAG) VALUES(?, ?)''', [user_id], False)
         diary_mode_flag = False
     except sqlite3.IntegrityError as e:
         diary_mode_flag = cur.execute('''SELECT DIARYMODEFLAG FROM USERS WHERE USERID=? ''', [user_id]).fetchone()[0]
@@ -203,6 +188,7 @@ def check_user(con, user_id) :
 
 
 if __name__ == "__main__":
+    print(transralte_lang("こんにちは","JA","EN"))
     con = sqlite3.connect('tables.db')
     print(is_matched_full_text("hello",con))
     print(is_matched_full_text("ooo", con))
