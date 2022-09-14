@@ -11,6 +11,10 @@ from linebot.models import (
 )
 import os
 
+import requests
+import json
+import types
+
 app = Flask(__name__)
 
 line_bot_api = LineBotApi(os.environ['YOUR_CHANNEL_ACCESS_TOKEN'])
@@ -41,32 +45,60 @@ def callback():
     return 'OK'
 
 @handler.add(MessageEvent, message=TextMessage)
-def handle_message(event):
+def handle_message(event, self):
     print(event.message.text)
-    if "diary" in event.message.text:
-        print(diary_mode_flag)
-        if not diary_mode_flag :
-            line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage(text="どうぞ"))
 
-            diary_mode_flag = True
+    if self.diary_mode_flag == True:
+        print("make_picture")
+    # if "diary" in event.message.text:
+    #     print(diary_mode_flag)
+    #     if not diary_mode_flag :
+    #         line_bot_api.reply_message(
+    #             event.reply_token,
+    #             TextSendMessage(text="どうぞ"))
 
-            #deepl
-        else:
-            diary_mode_flag = True
-            line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage(text="作成中"))
+    #         diary_mode_flag = True
 
-            # line_bot_api.reply_message(
-            #     event.reply_token,
-            #     TextSendMessage(text="作成中"))
+    #         #deepl
+    #     else:
+    #         diary_mode_flag = True
+    #         line_bot_api.reply_message(
+    #             event.reply_token,
+    #             TextSendMessage(text="作成中"))
+
+    #         # line_bot_api.reply_message(
+    #         #     event.reply_token,
+    #         #     TextSendMessage(text="作成中"))
 
     else :
-        line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=event.message.text))
+        if "日記" in event.message.text:
+            self.diary_mode_flag = True
+            print("日記を受け付ける")
+
+        else:
+            print("反応モード")
+            #word_list:登録しているword
+            word_list = []
+            if event.message.text in word_list:
+                print("特定のワードを返す")
+                output = ""
+                line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text=output))
+
+            else:
+                print("nobyに頼る")
+                ENDPOINT = "https://www.cotogoto.ai/webapi/noby.json"
+                MY_KEY = '313fbe3c3dd8381b9e26a3a3bc36d51d'
+
+                payload = {'text': f'{event.message.text}', 'app_key': MY_KEY}
+                r = requests.get(ENDPOINT, params=payload)
+                data = r.json()
+                response = data["text"]
+
+                line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text=response))
 
 #プッシュメッセージ
 @app.route("/send/<message>")
