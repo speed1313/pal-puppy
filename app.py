@@ -41,8 +41,9 @@ def callback():
     return 'OK'
 
 @handler.add(MessageEvent, message=TextMessage)
-def handle_message(event, diary_mode_flag):
+def handle_message(event):
     if "日記" in event.message.text:
+        print(diary_mode_flag)
         if not diary_mode_flag :
             line_bot_api.reply_message(
                 event.reply_token,
