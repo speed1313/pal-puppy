@@ -38,13 +38,26 @@ def callback():
 
     return 'OK'
 
-
+diary_mode_flag = False
 
 @handler.add(MessageEvent, message=TextMessage)
-def handle_message(event):
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=event.message.text))
+def handle_message(event, diary_mode_flag):
+    if "日記" in event.messagie.text:
+        if not diary_mode_flag :
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text="作成中"))
+        else:
+            diary_mode_flag = True
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text="どうぞ"))
 
 
 
+    else:
+
+
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=event.message.text))
