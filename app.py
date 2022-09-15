@@ -175,7 +175,9 @@ def use_noby(con, event):
     #DBに保存 TODO: これは何?
     insert_to_replys_db(con, target_word=event.message.text, reply_word=response)
     if use_lang == "en":
-        response = transralte_lang(input_text, "JA", "EN")
+        print("----transrate-----")
+        response = transralte_lang(response, "JA", "EN")
+        print(response)
 
 
     return response
