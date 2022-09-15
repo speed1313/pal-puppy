@@ -26,7 +26,7 @@ VALUES
 ("Things will work out."),
 ("You did a good job."),
 ("Keep it up!"),
-("Just do it!"),
+("Just do it!");
 
 -- replies table
 CREATE TABLE IF NOT EXISTS REPLIES (TARGET_WORD TEXT NOT NULL, REPLY_WORD TEXT NOT NULL,REPLYID INTEGER  PRIMARY KEY AUTOINCREMENT);
@@ -35,6 +35,6 @@ INSERT INTO REPLIES
 VALUES
 ("pal-puppy", "What's up? My best friend."),
 -- ("wheather", "sunny"),
-("tired","good luck!"),
+("tired","good luck!");
 
 CREATE TABLE IF NOT EXISTS USERS (DIALY_MODE_FLAG INTEGER NOT NULL, USERID TEXT PRIMARY KEY);
