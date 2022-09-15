@@ -1,3 +1,4 @@
+from email import message
 from flask import Flask, request, abort, render_template
 
 from linebot import (
@@ -127,6 +128,13 @@ def handle_message(event):
 
     return 'OK'
 
+#マニュアルメッセージ
+@app.route("/send/<message>")
+def push_manual_message():
+    line_bot_api.broadcast([TextSendMessage(text=message)])
+
+    return 'OK'
+
 #プッシュメッセージ
 @app.route("/send")
 def push_message():
@@ -135,6 +143,24 @@ def push_message():
     messages = cur.execute('''SELECT * FROM MESSAGES''').fetchall()
     line_bot_api.broadcast([TextSendMessage(text=random.choice(messages)[0])])
     con.close()
+
+    return 'OK'
+
+#プッシュメッセージ
+@app.route("/send/advice")
+def push_advice():
+    request = requests.get("https://api.adviceslip.com/advice")
+    request = request.json()
+    line_bot_api.broadcast([TextSendMessage(text=request['slip']['advice'])])
+
+    return 'OK'
+
+#プッシュメッセージ
+@app.route("/send/joke")
+def push_joke():
+    request = requests.get("https://icanhazdadjoke.com/slack", {"Accept": "text/plain"})
+    request = request.json()
+    line_bot_api.broadcast([TextSendMessage(text=request['attachments'][0]['text'])])
 
     return 'OK'
 
@@ -204,24 +230,6 @@ def delete_keyword():
         con.close()
         # print(result.getlist('register')[0])
         return form()
-
-#プッシュメッセージ
-@app.route("/send/advice")
-def push_advice():
-    request = requests.get("https://api.adviceslip.com/advice")
-    request = request.json()
-    line_bot_api.broadcast([TextSendMessage(text=request['slip']['advice'])])
-
-    return 'OK'
-
-#プッシュメッセージ
-@app.route("/send/joke")
-def push_joke():
-    request = requests.get("https://icanhazdadjoke.com/slack", {"Accept": "text/plain"})
-    request = request.json()
-    line_bot_api.broadcast([TextSendMessage(text=request['attachments'][0]['text'])])
-
-    return 'OK'
 #########
 
 def is_matched_full_text(message, con):
