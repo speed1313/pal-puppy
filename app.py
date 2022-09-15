@@ -1,4 +1,4 @@
-from flask import Flask, request, abort
+from flask import Flask, request, abort, render_template
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -13,6 +13,7 @@ import os
 import sqlite3
 from flask import g
 import random
+from flask_bootstrap import Bootstrap
 import requests
 import json
 import types
@@ -23,9 +24,12 @@ import cld3
 # reactions = reactions()
 
 app = Flask(__name__)
-
+bootstrap = Bootstrap(app)
 line_bot_api = LineBotApi(os.environ['YOUR_CHANNEL_ACCESS_TOKEN'])
 handler = WebhookHandler(os.environ['YOUR_CHANNEL_SECRET'])
+
+# line_bot_api = LineBotApi("xx")
+# handler = WebhookHandler("xx")
 
 # noby
 ENDPOINT = "https://www.cotogoto.ai/webapi/noby.json"
@@ -134,6 +138,73 @@ def push_message():
 
     return 'OK'
 
+#adminサイト
+@app.route("/admin")
+def form():
+    con = sqlite3.connect('tables.db')
+    cur = con.cursor()
+    messages = cur.execute(
+        '''SELECT MESSAGEID, MESSAGE FROM MESSAGES''').fetchall()
+    replies = cur.execute(
+        '''SELECT REPLYID, TARGET_WORD, REPLY_WORD FROM REPLIES''').fetchall()
+    con.close()
+
+    return render_template('form.html', messages=messages, replies=replies)
+
+#adminサイト  格言追加処理
+@app.route('/register', methods = ['POST'])
+def register():
+    if request.method == 'POST':
+        result = request.form
+        con = sqlite3.connect('tables.db')
+        cur = con.cursor()
+        messages = cur.execute('''INSERT INTO MESSAGES(MESSAGE) VALUES(?)''', (result.getlist('register')[0],))
+        con.commit()
+        con.close()
+        # print(result.getlist('register')[0])
+        return form()
+
+#adminサイト  格言削除処理
+@app.route('/delete', methods = ['POST'])
+def delete_message():
+    if request.method == 'POST':
+        result = request.form
+        con = sqlite3.connect('tables.db')
+        cur = con.cursor()
+        messages = cur.execute(
+            '''DELETE FROM MESSAGES WHERE MESSAGEID = ?''', (result.getlist('message_id')[0],))
+        con.commit()
+        con.close()
+        # print(result.getlist('register')[0])
+        return form()
+
+#adminサイト  特定のキーワードに対して特定のキーワードを返信する機能   追加処理
+@app.route('/keyword_add', methods = ['POST'])
+def add_keyword():
+    if request.method == 'POST':
+        result = request.form
+        con = sqlite3.connect('tables.db')
+        cur = con.cursor()
+        cur.execute('''INSERT INTO REPLIES(TARGET_WORD, REPLY_WORD) VALUES(?, ?)''', ((
+            result.getlist('user')[0]), (result.getlist('bot')[0])))
+        con.commit()
+        con.close()
+        # print(result.getlist('register')[0])
+        return form()
+
+#adminサイト  特定のキーワードに対して特定のキーワードを返信する機能   削除処理
+@app.route('/keyword_del', methods = ['POST'])
+def delete_keyword():
+    if request.method == 'POST':
+        result = request.form
+        con = sqlite3.connect('tables.db')
+        cur = con.cursor()
+        cur.execute('''DELETE FROM REPLIES WHERE REPLYID = ? ''', (result.getlist('reply_id')[0],))
+        con.commit()
+        con.close()
+        # print(result.getlist('register')[0])
+        return form()
+
 #########
 
 def is_matched_full_text(message, con):
@@ -181,9 +252,7 @@ def use_noby(con, event):
         response = transralte_lang(response, "JA", "EN")
         print(response)
 
-
     return response
-
 
 def insert_to_replys_db(con, target_word, reply_word):
     '''
