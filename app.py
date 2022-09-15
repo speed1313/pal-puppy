@@ -238,19 +238,15 @@ def check_user(con, user_id):
     return diary_mode_flag
 
 def chek_lang(text):
-    use_lang = ""
     cld3_languages = cld3.get_frequent_languages(
         text,
         num_langs=3,
         )
     for i in cld3_languages:
-        #日本語が0だったら
-        print(i[3])
-        if i[0] == "ja" and i[3] == 0:
-            use_lang = "en"
-        else:
+        print(i)
+        use_lang = "en"
+        if i[0] == "ja":
             use_lang = "ja"
-
 
     return use_lang
 
