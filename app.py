@@ -79,11 +79,11 @@ def handle_message(event):
         #         event.reply_token,
         #         TextSendMessage(text="create figure"))
 
-        # request = requests.get("https://dog.ceo/api/breeds/image/random")
-        request = requests.get("https://joeschmoe.io/api/v1/random")
-        request.json()
+        request = requests.get("https://dog.ceo/api/breeds/image/random")
+        # request = requests.get("https://joeschmoe.io/api/v1/random")
+        # request.json()
 
-        print(request)
+        # print(request)
 
         image_url = request
 
