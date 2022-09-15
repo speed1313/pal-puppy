@@ -16,6 +16,7 @@ import random
 import requests
 import json
 import types
+import cld3
 
 # from reactions import reactions
 
@@ -78,6 +79,7 @@ def handle_message(event):
         # line_bot_api.reply_message(
         #         event.reply_token,
         #         TextSendMessage(text="create figure"))
+        received_text = transralte_lang(received_text, "JA", "EN")
 
         # request = requests.get("https://aws.random.cat/meow")
         request = requests.get("https://dog.ceo/api/breeds/image/random")
@@ -89,10 +91,10 @@ def handle_message(event):
         image_url = request['message']
 
         diary_mode_flag = 0
-        line_bot_api.push_message(user_id, TextSendMessage(text="Image creating"))
+        # line_bot_api.push_message(user_id, TextSendMessage(text="Image creating"))
         line_bot_api.push_message(user_id, ImageSendMessage(original_content_url=image_url, preview_image_url=image_url))
 
-        message = "Image created"
+        message = "But that doesn't matter, look at my friends!"
 
         cur = con.cursor()
         # reset flag
@@ -160,12 +162,25 @@ def is_matched_full_text(message, con):
 #     TextSendMessage(text=output))
 
 def use_noby(con, event):
-    payload = {'text': f'{event.message.text}', 'app_key': API_KEY_noby}
+    input_text = event.message.text
+    #言語の確認
+    use_lang = chek_lang(input_text)
+    print(use_lang)
+    #transrate to JA
+    input_text = transralte_lang(input_text, "EN", "JA")
+    print(f"EN->JA:{input_text}")
+    payload = {'text': f'{input_text}', 'app_key': API_KEY_noby}
     r = requests.get(ENDPOINT, params=payload)
     data = r.json()
     response = data["text"]
+    print(f"nobyの返答:{response}")
     #DBに保存 TODO: これは何?
-    insert_to_replys_db(con, target_word=event.message.text, reply_word=response)
+    # insert_to_replys_db(con, target_word=event.message.text, reply_word=response)
+    if use_lang == "en":
+        print("----transrate-----")
+        response = transralte_lang(response, "JA", "EN")
+        print(response)
+
 
     return response
 
@@ -223,6 +238,20 @@ def check_user(con, user_id):
         diary_mode_flag = diary_mode_flags[0]
         print(diary_mode_flag)
     return diary_mode_flag
+
+def chek_lang(text):
+    cld3_languages = cld3.get_frequent_languages(
+        text,
+        num_langs=3,
+        )
+    use_lang = "en"
+    for i in cld3_languages:
+        print(i)
+        if i[0] == "ja":
+            use_lang = "ja"
+            break
+
+    return use_lang
 
 if __name__ == "__main__":
     # print(transralte_lang("こんにちは","JA","EN"))
