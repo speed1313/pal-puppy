@@ -242,11 +242,12 @@ def chek_lang(text):
         text,
         num_langs=3,
         )
+    use_lang = "en"
     for i in cld3_languages:
         print(i)
-        use_lang = "en"
         if i[0] == "ja":
             use_lang = "ja"
+            break
 
     return use_lang
 
