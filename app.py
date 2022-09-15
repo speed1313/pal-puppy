@@ -13,11 +13,11 @@ import os
 import sqlite3
 from flask import g
 import random
-
+from flask_bootstrap import Bootstrap
 
 
 app = Flask(__name__)
-
+bootstrap = Bootstrap(app)
 # line_bot_api = LineBotApi(os.environ['YOUR_CHANNEL_ACCESS_TOKEN'])
 # handler = WebhookHandler(os.environ['YOUR_CHANNEL_SECRET'])
 
@@ -58,7 +58,7 @@ def test():
 #     else:
 #         print("no match")
 #     con.close()
-    
+
 #     return 'OK'
 
 # #プッシュメッセージ
