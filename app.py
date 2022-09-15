@@ -208,7 +208,7 @@ def delete_keyword():
 #プッシュメッセージ
 @app.route("/send/advice")
 def push_advice():
-    request = requests.get("https://icanhazdadjoke.com/")
+    request = requests.get("https://api.adviceslip.com/advice")
     request = request.json()
     line_bot_api.broadcast([TextSendMessage(text=random.choice(request['slip']['advice']))])
 
