@@ -168,10 +168,12 @@ def use_noby(con, event):
     print(use_lang)
     #transrate to JA
     input_text = transralte_lang(input_text, "EN", "JA")
+    print(f"EN->JA:{input_text}")
     payload = {'text': f'{input_text}', 'app_key': API_KEY_noby}
     r = requests.get(ENDPOINT, params=payload)
     data = r.json()
     response = data["text"]
+    print(f"nobyの返答:{response}")
     #DBに保存 TODO: これは何?
     insert_to_replys_db(con, target_word=event.message.text, reply_word=response)
     if use_lang == "en":
