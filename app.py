@@ -265,7 +265,6 @@ def check_user(con, user_id):
         diary_mode_flag = 0
     else :
         diary_mode_flag = diary_mode_flags[0]
-        print(diary_mode_flag)
     return diary_mode_flag
 
 def chek_lang(text):
@@ -275,7 +274,6 @@ def chek_lang(text):
         )
     use_lang = "en"
     for i in cld3_languages:
-        print(i)
         if i[0] == "ja":
             use_lang = "ja"
             break
