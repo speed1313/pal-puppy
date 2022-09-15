@@ -83,12 +83,12 @@ def handle_message(event):
         con.commit()
 
     else :
-        if "dialy" in received_text:
+        if ("dialy" in received_text) or ("日記" in received_text):
             cur = con.cursor()
             cur.execute('''UPDATE USERS SET DIALY_MODE_FLAG = ? WHERE USERID = ?''', (1, user_id))
             con.commit()
 
-            message = "come on!"
+            message = "Let me hear it!"
 
         else:
             message = is_matched_full_text(event.message.text, con)
@@ -160,7 +160,6 @@ def register():
         messages = cur.execute('''INSERT INTO MESSAGES(MESSAGE) VALUES(?)''', (result.getlist('register')[0],))
         con.commit()
         con.close()
-        # print(result.getlist('register')[0])
         return form()
 
 #adminサイト  格言削除処理
@@ -200,6 +199,7 @@ def delete_keyword():
         con.commit()
         con.close()
         return form()
+
 #########
 
 def is_matched_full_text(message, con):
