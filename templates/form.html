@@ -3,16 +3,58 @@
     <link rel="stylesheet" href="/static/style.css">
     </head>
     <body>
-        {% for message in messages %}
-        {{message}}
-        {% endfor %}
+        <table>
+            <thead>
+                <tr>
+                    <th>メッセージ内容</th>
+                    <th>編集</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for message in messages %}
+                <tr>
+                    <td>{{message[1]}}</td>
+                    <td>
+                        <form action="/delete" method="POST">
+                            <p><input type="hidden" name = "message_id" value={{message[0]}} /></p>
+                            <p><input type="submit" value="delete" /></p>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <table>
+            <thead>
+                <tr>
+                    <th>メッセージ内容</th>
+                    <th>編集</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reply in replies %}
+                <tr>
+                    <td>{{reply[1]}}</td>
+                    <td>
+                        <form action="/delete_reply" method="POST">
+                            <p><input type="hidden" name="reply_id" value={{reply[0]}} /></p>
+                            <p><input type="submit" value="delete" /></p>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
         <form action = "/register" method = "POST">
             <p>Register <input type = "text" name = "register" /></p>
             <p><input type = "submit" value = "submit" /></p>
         </form>
-        <form action="/delete" method="POST">
-            <p>Delete <input type="text" name="delete" /></p>
-            <p><input type="submit" value="submit" /></p>
+
+        <form action = "/keyword_add" method = "POST">
+            <p>User <input type = "text" name = "user" /></p>
+            <p>Bot <input type = "text" name = "bot" /></p>
+            <p><input type = "submit" value = "submit" /></p>
         </form>
     </body>
 </html>

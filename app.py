@@ -80,13 +80,15 @@ def form():
     cur = con.cursor()
     messages = cur.execute(
         '''SELECT MESSAGEID, MESSAGE FROM MESSAGES''').fetchall()
+    replies = cur.execute(
+        '''SELECT REPLYID, TARGET_WORD, REPLY_WORD FROM REPLIES''').fetchall()
     con.close()
 
-    return render_template('form.html', messages = messages)
+    return render_template('form.html', messages=messages, replies=replies)
 
 #adminサイト  格言追加処理
 @app.route('/register', methods = ['POST'])
-def confirm():
+def register():
     if request.method == 'POST':
         result = request.form
         con = sqlite3.connect('tables.db')
@@ -97,22 +99,47 @@ def confirm():
         # print(result.getlist('register')[0])
         return form()
 
-
-
-#adminサイト  特定のキーワード
-@app.route('/register-key', methods = ['POST'])
-def keyregister():
+#adminサイト  格言削除処理
+@app.route('/delete', methods = ['POST'])
+def delete_message():
     if request.method == 'POST':
         result = request.form
         con = sqlite3.connect('tables.db')
         cur = con.cursor()
-        messages = cur.execute('''INSERT INTO MESSAGES(MESSAGE) VALUES(?)''', (result.getlist('register')[0],))
+        messages = cur.execute(
+            '''DELETE FROM MESSAGES WHERE MESSAGEID = ?''', (result.getlist('message_id')[0],))
         con.commit()
         con.close()
         # print(result.getlist('register')[0])
         return form()
 
+#adminサイト  特定のキーワードに対して特定のキーワードを返信する機能 キーワード追加
+@app.route('/keyword_add', methods = ['POST'])
+def keyword():
+    if request.method == 'POST':
+        result = request.form
+        con = sqlite3.connect('tables.db')
+        cur = con.cursor()
+        cur.execute('''INSERT INTO REPLIES(TARGET_WORD, REPLY_WORD) VALUES(?, ?)''', ((
+            result.getlist('user')[0]), (result.getlist('bot')[0])))
+        con.commit()
+        con.close()
+        # print(result.getlist('register')[0])
+        return form()
 
+#adminサイト  特定のキーワードに対して特定のキーワードを返信する機能 キーワード削除
+@app.route('/keyword_del', methods = ['POST'])
+def keyword():
+    if request.method == 'POST':
+        result = request.form
+        con = sqlite3.connect('tables.db')
+        cur = con.cursor()
+        cur.execute('''INSERT INTO REPLIES(TARGET_WORD, REPLY_WORD) VALUES(?, ?)''', ((
+            result.getlist('user')[0]), (result.getlist('bot')[0])))
+        con.commit()
+        con.close()
+        # print(result.getlist('register')[0])
+        return form()
 
 # def is_matched_full_text(message, con):
 #     cur = con.cursor()
