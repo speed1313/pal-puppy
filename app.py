@@ -25,11 +25,11 @@ import cld3
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
-# line_bot_api = LineBotApi(os.environ['YOUR_CHANNEL_ACCESS_TOKEN'])
-# handler = WebhookHandler(os.environ['YOUR_CHANNEL_SECRET'])
+line_bot_api = LineBotApi(os.environ['YOUR_CHANNEL_ACCESS_TOKEN'])
+handler = WebhookHandler(os.environ['YOUR_CHANNEL_SECRET'])
 
-line_bot_api = LineBotApi("xx")
-handler = WebhookHandler("xx")
+# line_bot_api = LineBotApi("xx")
+# handler = WebhookHandler("xx")
 
 # noby
 ENDPOINT = "https://www.cotogoto.ai/webapi/noby.json"
@@ -252,9 +252,7 @@ def use_noby(con, event):
         response = transralte_lang(response, "JA", "EN")
         print(response)
 
-
     return response
-
 
 def insert_to_replys_db(con, target_word, reply_word):
     '''
