@@ -244,8 +244,9 @@ def chek_lang(text):
         num_langs=3,
         )
     for i in cld3_languages:
-        #全て英語だったら英語と判断
-        if i[0] == "en" and i[3] == 1:
+        #日本語が0だったら
+        print(i[3])
+        if i[0] == "ja" and i[3] == 0:
             use_lang = "en"
         else:
             use_lang = "ja"
