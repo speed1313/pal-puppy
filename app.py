@@ -210,7 +210,7 @@ def delete_keyword():
 def push_advice():
     request = requests.get("https://api.adviceslip.com/advice")
     request = request.json()
-    line_bot_api.broadcast([TextSendMessage(text=random.choice(request['slip']['advice']))])
+    line_bot_api.broadcast([TextSendMessage(text=request['slip']['advice'])])
 
     return 'OK'
 
@@ -219,7 +219,7 @@ def push_advice():
 def push_joke():
     request = requests.get("https://icanhazdadjoke.com/slack", {"Accept": "text/plain"})
     request = request.json()
-    line_bot_api.broadcast([TextSendMessage(text=random.choice(request['attachments']['text']))])
+    line_bot_api.broadcast([TextSendMessage(text=request['attachments'][0]['text'])])
 
     return 'OK'
 #########
