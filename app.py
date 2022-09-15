@@ -16,6 +16,7 @@ import random
 import requests
 import json
 import types
+import cld3
 
 # from reactions import reactions
 
@@ -164,6 +165,7 @@ def use_noby(con, event):
     input_text = event.message.text
     #言語の確認
     use_lang = chek_lang(input_text)
+    print(use_lang)
     #transrate to JA
     input_text = transralte_lang(input_text, "EN", "JA")
     payload = {'text': f'{input_text}', 'app_key': API_KEY_noby}

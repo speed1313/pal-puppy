@@ -2,3 +2,4 @@ Flask
 Jinja2
 gunicorn
 line-bot-sdk
+cld3
