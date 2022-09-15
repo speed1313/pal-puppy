@@ -2,8 +2,5 @@ Flask
 Jinja2
 gunicorn
 line-bot-sdk
-<<<<<<< HEAD
 flask_bootstrap
-=======
 pycld3
->>>>>>> main
