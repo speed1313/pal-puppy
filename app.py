@@ -81,6 +81,7 @@ def handle_message(event):
         #         event.reply_token,
         #         TextSendMessage(text="create figure"))
 
+        # request = requests.get("https://aws.random.cat/meow")
         request = requests.get("https://dog.ceo/api/breeds/image/random")
         # request = requests.get("https://joeschmoe.io/api/v1/random")
         request = request.json()
