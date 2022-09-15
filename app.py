@@ -78,6 +78,7 @@ def handle_message(event):
         # line_bot_api.reply_message(
         #         event.reply_token,
         #         TextSendMessage(text="create figure"))
+        received_text = transralte_lang(received_text, "JA", "EN")
 
         # request = requests.get("https://aws.random.cat/meow")
         request = requests.get("https://dog.ceo/api/breeds/image/random")
@@ -160,12 +161,20 @@ def is_matched_full_text(message, con):
 #     TextSendMessage(text=output))
 
 def use_noby(con, event):
-    payload = {'text': f'{event.message.text}', 'app_key': API_KEY_noby}
+    input_text = event.message.text
+    #言語の確認
+    use_lang = chek_lang(input_text)
+    #transrate to JA
+    input_text = transralte_lang(input_text, "EN", "JA")
+    payload = {'text': f'{input_text}', 'app_key': API_KEY_noby}
     r = requests.get(ENDPOINT, params=payload)
     data = r.json()
     response = data["text"]
     #DBに保存 TODO: これは何?
     insert_to_replys_db(con, target_word=event.message.text, reply_word=response)
+    if use_lang == "en":
+        response = transralte_lang(input_text, "JA", "EN")
+
 
     return response
 
@@ -223,6 +232,22 @@ def check_user(con, user_id):
         diary_mode_flag = diary_mode_flags[0]
         print(diary_mode_flag)
     return diary_mode_flag
+
+def chek_lang(text):
+    use_lang = ""
+    cld3_languages = cld3.get_frequent_languages(
+        text,
+        num_langs=3,
+        )
+    for i in cld3_languages:
+        #全て英語だったら英語と判断
+        if i[0] == "en" and i[3] == 1:
+            use_lang = "en"
+        else:
+            use_lang = "ja"
+
+
+    return use_lang
 
 if __name__ == "__main__":
     # print(transralte_lang("こんにちは","JA","EN"))
