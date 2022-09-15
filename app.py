@@ -7,7 +7,7 @@ from linebot.exceptions import (
     InvalidSignatureError
 )
 from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage,
+    MessageEvent, TextMessage, TextSendMessage, ImageSendMessage,
 )
 import os
 import sqlite3
@@ -34,6 +34,8 @@ API_KEY_noby = '313fbe3c3dd8381b9e26a3a3bc36d51d'
 API_KEY_dl = '0210a084-8bd5-b5cb-af38-e2f2bbfb9a2a:fx' # 自身の API キーを指定
 
 
+# diary_mode_flag = 0
+
 @app.route("/")
 def test():
     return "<h1>Tests</h1>"
@@ -58,37 +60,60 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
+    # print(event.source.user_id)
     user_id = event.source.user_id
-    # print(event.message.text)
     con = sqlite3.connect('tables.db')
+
+    # cur = con.cursor()
+    # print(cur.execute('''SELECT DIALY_MODE_FLAG FROM USERS WHERE USERID=? ''', (user_id,)).fetchall())
+
     diary_mode_flag = check_user(con, user_id)
         #deeplに渡す
     received_text = event.message.text
-    received_text = translate_lang(received_text,"JA","EN")
+    # received_text = transralte_lang(received_text,"JA","EN")
     message = "" #返信メッセージ
 
-    if diary_mode_flag == True:
-        line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage(text="画像を生成します"))
-        diary_mode_flag = False
-        message = "diary image"
+    # sended_text = transralte_lang(sended_text,"JA","EN")
+    if diary_mode_flag == 1:
+        # line_bot_api.reply_message(
+        #         event.reply_token,
+        #         TextSendMessage(text="create figure"))
+
+        # request = requests.get("https://aws.random.cat/meow")
+        request = requests.get("https://dog.ceo/api/breeds/image/random")
+        # request = requests.get("https://joeschmoe.io/api/v1/random")
+        request = request.json()
+
+        # print(request)
+
+        image_url = request['message']
+
+        diary_mode_flag = 0
+        line_bot_api.push_message(user_id, TextSendMessage(text="Image creating"))
+        line_bot_api.push_message(user_id, ImageSendMessage(original_content_url=image_url, preview_image_url=image_url))
+
+        message = "Image created"
 
         cur = con.cursor()
         # reset flag
-        cur.execute('''UPDATE INTO USERS(USERID, DIARYMODEFLAG) VALUES(?, ?)''', [user_id], False)
-        # TODO:
+        cur.execute('''UPDATE USERS SET DIALY_MODE_FLAG = ? WHERE USERID = ?''', (0, user_id,))
+        con.commit()
 
     else :
         if "dialy" in received_text:
             cur = con.cursor()
-            cur.execute('''UPDATE INTO USERS(USERID, DIARYMODEFLAG) VALUES(?, ?)''', [user_id], True)
-            get_daily_report(event)
+            cur.execute('''UPDATE USERS SET DIALY_MODE_FLAG = ? WHERE USERID = ?''', (1, user_id))
+            con.commit()
+            # print(cur.execute('''SELECT DIALY_MODE_FLAG FROM USERS WHERE USERID=? ''', (user_id,)).fetchall())
+
+            # get_daily_report(event)
+            message = "come on!"
+
         else:
             print("反応モード")
             message = is_matched_full_text(event.message.text, con)
             if message == "":
-                message = use_noby(event)
+                message = use_noby(con, event)
 
     line_bot_api.reply_message(
     event.reply_token, TextSendMessage(text=message))
@@ -107,8 +132,6 @@ def push_message():
 
     return 'OK'
 
-
-
 #########
 
 def is_matched_full_text(message, con):
@@ -119,13 +142,13 @@ def is_matched_full_text(message, con):
     else:
         return reply_message[0]
 
-def get_daily_report(event, diary_mode_flag):
-    diary_mode_flag = True
-    line_bot_api.reply_message(
-    event.reply_token,
-    TextSendMessage(text="どうぞ!"))
+# def get_daily_report(event, diary_mode_flag):
+#     # diary_mode_flag = 1
+#     line_bot_api.reply_message(
+#     event.reply_token,
+#     TextSendMessage(text="どうぞ!"))
 
-    return diary_mode_flag
+#     return diary_mode_flag
 
 # def make_picture(self, event, text):
 #     return
@@ -136,27 +159,27 @@ def get_daily_report(event, diary_mode_flag):
 #     event.reply_token,
 #     TextSendMessage(text=output))
 
-def use_noby(event):
+def use_noby(con, event):
     payload = {'text': f'{event.message.text}', 'app_key': API_KEY_noby}
     r = requests.get(ENDPOINT, params=payload)
     data = r.json()
     response = data["text"]
     #DBに保存 TODO: これは何?
-    insert_to_replys_db(target_word=event.message.text, reply_word=response)
+    insert_to_replys_db(con, target_word=event.message.text, reply_word=response)
 
     return response
 
 
-def insert_to_replys_db(target_word, reply_word):
+def insert_to_replys_db(con, target_word, reply_word):
     '''
     '''
-    con = sqlite3.connect('replys.DB')
+    # con = sqlite3.connect('replys.DB')
     cur = con.cursor()
-    sql = 'INSERT INTO REPLIES (target_word, reply) values (?, ?)'
+    sql = '''INSERT INTO REPLIES (TARGET_WORD, REPLY_WORD) values (?, ?)'''
     data = [target_word, reply_word]
     cur.execute(sql, data)
     con.commit()
-    con.close()
+    # con.close()
 
 def transralte_lang(text, source_lang, target_lang):
     """
@@ -175,21 +198,42 @@ def transralte_lang(text, source_lang, target_lang):
     # {'translations': [{'detected_source_language': 'EN', 'text': 'リーマンゼータ関数は、整数論において非常に重要な関数である。'}]}
     return result['translations'][0]['text']
 
+# def check_user(con, user_id):
+#     cur = con.cursor()
+#     try :
+#         cur.execute('''INSERT INTO USERS(USERID, DIALY_MODE_FLAG) VALUES(?, ?)''', (user_id, 0))
+#         diary_mode_flag = 0
+#         print("レコードを追加")
+#     except sqlite3.IntegrityError as e:
+#         diary_mode_flag = cur.execute('''SELECT DIALY_MODE_FLAG FROM USERS WHERE USERID=? ''', (user_id,)).fetchone()[0]
+#         print(diary_mode_flag)
+#     return diary_mode_flag
+
 def check_user(con, user_id):
     cur = con.cursor()
-    try :
-        cur.execute('''INSERT INTO USERS(USERID, DIARYMODEFLAG) VALUES(?, ?)''', [user_id], False)
-        diary_mode_flag = False
-    except sqlite3.IntegrityError as e:
-        diary_mode_flag = cur.execute('''SELECT DIARYMODEFLAG FROM USERS WHERE USERID=? ''', [user_id]).fetchone()[0]
+
+    diary_mode_flags = cur.execute('''SELECT DIALY_MODE_FLAG FROM USERS WHERE USERID=? ''', (user_id,)).fetchone()
+
+    if diary_mode_flags == None:
+        cur.execute('''INSERT INTO USERS(USERID, DIALY_MODE_FLAG) VALUES(?, ?)''', (user_id, 0))
+        con.commit()
+        diary_mode_flag = 0
+        print("レコードを追加")
+    else :
+        diary_mode_flag = diary_mode_flags[0]
         print(diary_mode_flag)
     return diary_mode_flag
 
-
 if __name__ == "__main__":
-    print(transralte_lang("こんにちは","JA","EN"))
+    # print(transralte_lang("こんにちは","JA","EN"))
     con = sqlite3.connect('tables.db')
-    print(is_matched_full_text("hello",con))
-    print(is_matched_full_text("ooo", con))
+    # print(is_matched_full_text("hello",con))
+    # print(is_matched_full_text("ooo", con))
+
+    # request = requests.get("https://dog.ceo/api/breeds/image/random")
+    #     # request = requests.get("https://joeschmoe.io/api/v1/random")
+    # request = request.json()
+
+    # print(request['message'])
 
     con.close()

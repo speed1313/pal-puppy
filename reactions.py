@@ -22,7 +22,7 @@
 #         API_KEY_dl = '0210a084-8bd5-b5cb-af38-e2f2bbfb9a2a:fx' # 自身の API キーを指定
 
 #     def get_daily_report(self, event, diary_mode_flag):
-#         diary_mode_flag = True
+#         diary_mode_flag = 1
 #         self.line_bot_api.reply_message(
 #         event.reply_token,
 #         TextSendMessage(text="どうぞ!"))
