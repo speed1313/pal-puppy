@@ -13,11 +13,11 @@ import os
 import sqlite3
 from flask import g
 import random
-
+from flask_bootstrap import Bootstrap
 
 
 app = Flask(__name__)
-
+bootstrap = Bootstrap(app)
 # line_bot_api = LineBotApi(os.environ['YOUR_CHANNEL_ACCESS_TOKEN'])
 # handler = WebhookHandler(os.environ['YOUR_CHANNEL_SECRET'])
 
@@ -58,7 +58,7 @@ def test():
 #     else:
 #         print("no match")
 #     con.close()
-    
+
 #     return 'OK'
 
 # #プッシュメッセージ
@@ -113,9 +113,9 @@ def delete_message():
         # print(result.getlist('register')[0])
         return form()
 
-#adminサイト  特定のキーワードに対して特定のキーワードを返信する機能 キーワード追加
+#adminサイト  特定のキーワードに対して特定のキーワードを返信する機能   追加処理
 @app.route('/keyword_add', methods = ['POST'])
-def keyword():
+def add_keyword():
     if request.method == 'POST':
         result = request.form
         con = sqlite3.connect('tables.db')
@@ -127,15 +127,14 @@ def keyword():
         # print(result.getlist('register')[0])
         return form()
 
-#adminサイト  特定のキーワードに対して特定のキーワードを返信する機能 キーワード削除
+#adminサイト  特定のキーワードに対して特定のキーワードを返信する機能   削除処理
 @app.route('/keyword_del', methods = ['POST'])
-def keyword():
+def delete_keyword():
     if request.method == 'POST':
         result = request.form
         con = sqlite3.connect('tables.db')
         cur = con.cursor()
-        cur.execute('''INSERT INTO REPLIES(TARGET_WORD, REPLY_WORD) VALUES(?, ?)''', ((
-            result.getlist('user')[0]), (result.getlist('bot')[0])))
+        cur.execute('''DELETE FROM REPLIES WHERE REPLYID = ? ''', (result.getlist('reply_id')[0],))
         con.commit()
         con.close()
         # print(result.getlist('register')[0])
