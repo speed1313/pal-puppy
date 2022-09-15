@@ -23,8 +23,10 @@ import types
 
 app = Flask(__name__)
 
-line_bot_api = LineBotApi(os.environ['YOUR_CHANNEL_ACCESS_TOKEN'])
-handler = WebhookHandler(os.environ['YOUR_CHANNEL_SECRET'])
+# line_bot_api = LineBotApi(os.environ['YOUR_CHANNEL_ACCESS_TOKEN'])
+# handler = WebhookHandler(os.environ['YOUR_CHANNEL_SECRET'])
+line_bot_api = LineBotApi("xx")
+handler = WebhookHandler("xx")
 
 # noby
 ENDPOINT = "https://www.cotogoto.ai/webapi/noby.json"
@@ -81,11 +83,11 @@ def handle_message(event):
 
         request = requests.get("https://dog.ceo/api/breeds/image/random")
         # request = requests.get("https://joeschmoe.io/api/v1/random")
-        # request.json()
+        request = request.json()
 
-        print(request)
+        # print(request)
 
-        image_url = request.message
+        image_url = request['message']
 
         diary_mode_flag = 0
         line_bot_api.push_message(user_id, TextSendMessage(text="Image creating"))
@@ -224,9 +226,15 @@ def check_user(con, user_id):
     return diary_mode_flag
 
 if __name__ == "__main__":
-    print(transralte_lang("こんにちは","JA","EN"))
+    # print(transralte_lang("こんにちは","JA","EN"))
     con = sqlite3.connect('tables.db')
-    print(is_matched_full_text("hello",con))
-    print(is_matched_full_text("ooo", con))
+    # print(is_matched_full_text("hello",con))
+    # print(is_matched_full_text("ooo", con))
+
+    # request = requests.get("https://dog.ceo/api/breeds/image/random")
+    #     # request = requests.get("https://joeschmoe.io/api/v1/random")
+    # request = request.json()
+
+    # print(request['message'])
 
     con.close()
