@@ -91,10 +91,10 @@ def handle_message(event):
         image_url = request['message']
 
         diary_mode_flag = 0
-        line_bot_api.push_message(user_id, TextSendMessage(text="Image creating"))
+        # line_bot_api.push_message(user_id, TextSendMessage(text="Image creating"))
         line_bot_api.push_message(user_id, ImageSendMessage(original_content_url=image_url, preview_image_url=image_url))
 
-        message = "Image created"
+        message = "But that doesn't matter, look at my friends!"
 
         cur = con.cursor()
         # reset flag
