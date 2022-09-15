@@ -217,7 +217,7 @@ def push_advice():
 #プッシュメッセージ
 @app.route("/send/joke")
 def push_joke():
-    request = requests.get("https://icanhazdadjoke.com/", {"Accept": "text/plain"})
+    request = requests.get("https://icanhazdadjoke.com/slack", {"Accept": "text/plain"})
     request = request.json()
     line_bot_api.broadcast([TextSendMessage(text=random.choice(request['attachments']['text']))])
 
