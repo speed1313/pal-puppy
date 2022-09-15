@@ -36,7 +36,7 @@
 
                 <form action="/register" method="POST">
                     <p>Message <input type="text" name="register" /></p>
-                    <p><input type="submit" value="register" /></p>
+                    <p><input class="btn btn-outline-primary" type="submit" value="register" /></p>
                 </form>
             </div>
             <div class="item mb-1 me-1">
@@ -57,7 +57,7 @@
                             <td>
                                 <form action="/keyword_del" method="POST">
                                     <p><input type="hidden" name="reply_id" value={{reply[0]}} /></p>
-                                    <p><input type="submit" value="delete" /></p>
+                                    <p><input class="btn btn-outline-primary" type="submit" value="delete" /></p>
                                 </form>
                             </td>
                         </tr>
@@ -69,7 +69,7 @@
                 <form action="/keyword_add" method="POST">
                     <p>Target Word <input type="text" name="user" /></p>
                     <p>Reply <input type="text" name="bot" /></p>
-                    <p><input type="submit" value="register" /></p>
+                    <p><input class="btn btn-outline-primary" type="submit" value="register" /></p>
                 </form>
             </div>
         </div>
