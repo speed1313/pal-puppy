@@ -90,6 +90,9 @@ def handle_message(event):
 
             message = "Let me hear it!"
 
+        elif ("help" in received_text) or ("使い方" in received_text):
+            message = "1. I'll answer anything to your message!\n1. あなたのメッセージに対してなんでも答えるよ！\n\n2. If you send me a message including your diary, I will make an image for it!\n2. 日記を含むメッセージをくれると，日記に対して画像を作るよ！/n/n3. Every once in a while I'll send you a message to encourage you or make you smile!/n3. たまにあなたを励ましたり，笑顔にするメッセージを送信するよ！"
+
         else:
             message = is_matched_full_text(event.message.text, con)
             if message == "":
