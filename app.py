@@ -207,7 +207,7 @@ def delete_keyword():
 
 #プッシュメッセージ
 @app.route("/send/advice")
-def push_message():
+def push_advice():
     request = requests.get("https://icanhazdadjoke.com/")
     request = request.json()
     line_bot_api.broadcast([TextSendMessage(text=random.choice(request['slip']['advice']))])
@@ -216,7 +216,7 @@ def push_message():
 
 #プッシュメッセージ
 @app.route("/send/joke")
-def push_message():
+def push_joke():
     request = requests.get("https://icanhazdadjoke.com/", {"Accept": "text/plain"})
     request = request.json()
     line_bot_api.broadcast([TextSendMessage(text=random.choice(request['attachments']['text']))])
