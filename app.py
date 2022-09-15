@@ -205,6 +205,23 @@ def delete_keyword():
         # print(result.getlist('register')[0])
         return form()
 
+#プッシュメッセージ
+@app.route("/send/advice")
+def push_message():
+    request = requests.get("https://icanhazdadjoke.com/")
+    request = request.json()
+    line_bot_api.broadcast([TextSendMessage(text=random.choice(request['slip']['advice']))])
+
+    return 'OK'
+
+#プッシュメッセージ
+@app.route("/send/joke")
+def push_message():
+    request = requests.get("https://icanhazdadjoke.com/", {"Accept": "text/plain"})
+    request = request.json()
+    line_bot_api.broadcast([TextSendMessage(text=random.choice(request['attachments']['text']))])
+
+    return 'OK'
 #########
 
 def is_matched_full_text(message, con):
@@ -321,15 +338,6 @@ def chek_lang(text):
             break
 
     return use_lang
-
-#プッシュメッセージ
-@app.route("/send/advice")
-def push_message():
-    request = requests.get("https://icanhazdadjoke.com/")
-    request = request.json()
-    line_bot_api.broadcast([TextSendMessage(text=random.choice(request['slip']['advice']))])
-
-    return 'OK'
 
 if __name__ == "__main__":
     # print(transralte_lang("こんにちは","JA","EN"))
