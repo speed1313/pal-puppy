@@ -130,7 +130,7 @@ def handle_message(event):
 
 #マニュアルメッセージ
 @app.route("/send/<message>")
-def push_manual_message():
+def push_manual_message(message):
     line_bot_api.broadcast([TextSendMessage(text=message)])
 
     return 'OK'
