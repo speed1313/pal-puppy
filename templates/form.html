@@ -1,0 +1,18 @@
+<html>
+    <head>
+    <link rel="stylesheet" href="/static/style.css">
+    </head>
+    <body>
+        {% for message in messages %}
+        {{message}}
+        {% endfor %}
+        <form action = "/register" method = "POST">
+            <p>Register <input type = "text" name = "register" /></p>
+            <p><input type = "submit" value = "submit" /></p>
+        </form>
+        <form action="/delete" method="POST">
+            <p>Delete <input type="text" name="delete" /></p>
+            <p><input type="submit" value="submit" /></p>
+        </form>
+    </body>
+</html>
