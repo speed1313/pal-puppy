@@ -322,6 +322,15 @@ def chek_lang(text):
 
     return use_lang
 
+#プッシュメッセージ
+@app.route("/send/advice")
+def push_message():
+    request = requests.get("https://icanhazdadjoke.com/")
+    request = request.json()
+    line_bot_api.broadcast([TextSendMessage(text=random.choice(request['slip']['advice']))])
+
+    return 'OK'
+
 if __name__ == "__main__":
     # print(transralte_lang("こんにちは","JA","EN"))
     con = sqlite3.connect('tables.db')
