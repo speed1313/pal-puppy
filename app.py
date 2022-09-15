@@ -23,10 +23,8 @@ import types
 
 app = Flask(__name__)
 
-# line_bot_api = LineBotApi(os.environ['YOUR_CHANNEL_ACCESS_TOKEN'])
-# handler = WebhookHandler(os.environ['YOUR_CHANNEL_SECRET'])
-line_bot_api = LineBotApi("xx")
-handler = WebhookHandler("xx")
+line_bot_api = LineBotApi(os.environ['YOUR_CHANNEL_ACCESS_TOKEN'])
+handler = WebhookHandler(os.environ['YOUR_CHANNEL_SECRET'])
 
 # noby
 ENDPOINT = "https://www.cotogoto.ai/webapi/noby.json"
