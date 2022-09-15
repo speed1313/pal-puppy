@@ -83,7 +83,7 @@ def handle_message(event):
         # request = requests.get("https://joeschmoe.io/api/v1/random")
         # request.json()
 
-        # print(request)
+        print(request)
 
         image_url = request.message
 
