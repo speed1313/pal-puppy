@@ -2,4 +2,5 @@ Flask
 Jinja2
 gunicorn
 line-bot-sdk
+cython
 cld3
