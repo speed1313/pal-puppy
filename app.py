@@ -85,7 +85,7 @@ def handle_message(event):
 
         # print(request)
 
-        image_url = request
+        image_url = request.message
 
         diary_mode_flag = 0
         line_bot_api.push_message(user_id, TextSendMessage(text="Image creating"))
