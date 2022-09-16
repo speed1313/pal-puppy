@@ -1,22 +1,21 @@
-# mother-bot
-this is a healing line bot for tired people.
+# Pal-puppy
+Pal-puppy(pal, a friend + puppy) is a healing line bot for tired people.
 We developed this app as a product of a hackathon held at Rakuten Group, Inc. summer intern 2022.
 
-## how to use
-Please register this bot as a friend and send a message to it.
-This bot's basic ID is @882ctzvj.
-
-This bot responds to specific words or replies to unregistered message automatically.
-
-registered messages can be controled by admin pages.
+## Features
+- This bot responds to specific words or replies to unregistered message automatically.
+- registered messages can be controled from /admin pages.
+- this app can send broadcast message
+- etc..
 
 
 ## Technical stack
-- Flask
 - Line Messaging API
+- Flask
 - Render(deployment service)
 - DeepL API(for translation)
 - Dog API(for generating image)
+- Noby API(for replying messages automatically)
 - etc...
 
 ## How to deploy this app
