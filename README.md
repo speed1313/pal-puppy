@@ -33,8 +33,6 @@ registered messages can be controled by admin pages.
    - ex) https://mother-go.onrender.com/callback
 4. enable webhook in webhook settings
 
-<img src="./img/webhook_url.png">
-
 ## Reference
 
 - [LINE Messaging APIの仕様](https://developers.line.biz/ja/reference/messaging-api/)
